@@ -9,7 +9,10 @@ find_package(GLEW REQUIRED)
 find_package(GLFW REQUIRED)
 find_package(GLM REQUIRED)
 
-include_directories(.)
+include_directories(
+   .
+   ${CMAKE_BINARY_DIR}
+   )
 
 set(ALL_LIBS
 	${OPENGL_LIBRARY}
@@ -20,7 +23,9 @@ set(ALL_LIBS
 add_definitions(
    -std=c++11
 	-D_CRT_SECURE_NO_WARNINGS
-)
+   )
+
+add_executable(toblob util/toblob.cpp)
 
 add_executable(tutorial18_particles
 	tutorial18_billboards_and_particles/tutorial18_particles.cpp
@@ -32,13 +37,18 @@ add_executable(tutorial18_particles
 	common/controls.hpp
 	tutorial18_billboards_and_particles/Particle.fragmentshader
 	tutorial18_billboards_and_particles/Particle.vertexshader
+   ${CMAKE_BINARY_DIR}/LedTexture.cpp
+   )
+
+add_custom_command(
+   OUTPUT LedTexture.cpp
+   COMMAND ./toblob  "${CMAKE_CURRENT_SOURCE_DIR}/tutorial18_billboards_and_particles/particle.DDS" ${CMAKE_BINARY_DIR} LedTexture
+   DEPENDS toblob tutorial18_billboards_and_particles/particle.DDS
 )
 
 target_link_libraries(tutorial18_particles
 	${ALL_LIBS}
 )
-
-add_custom_target(copy_dds ALL cp "${CMAKE_CURRENT_SOURCE_DIR}/tutorial18_billboards_and_particles/particle.DDS" "${CMAKE_CURRENT_BINARY_DIR}")
 
 # Xcode and Visual working directories
 set_target_properties(tutorial18_particles PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tutorial18_billboards_and_particles/")

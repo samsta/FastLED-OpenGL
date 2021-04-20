@@ -27,6 +27,8 @@ const std::string FRAGMENT_SHADER =
 #include "Particle.fragmentshader"
 ;
 
+#include "LedTexture.cpp"
+
 
 // CPU representation of a particle
 struct Particle{
@@ -225,8 +227,7 @@ int main( void )
 	static GLfloat* g_particule_position_size_data = new GLfloat[MaxParticles * 4];
 	static GLubyte* g_particule_color_data         = new GLubyte[MaxParticles * 4];
 
-
-	GLuint Texture = loadDDS("particle.DDS");
+	GLuint Texture = loadDDS(blobs::LedTexture, sizeof(blobs::LedTexture));
 
 	// The VBO containing the 4 vertices of the particles.
 	// Thanks to instancing, they will be shared by all particles.

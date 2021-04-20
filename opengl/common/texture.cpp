@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include <GL/glew.h>
 
 #include <GLFW/glfw3.h>
@@ -10,46 +9,59 @@
 #define FOURCC_DXT3 0x33545844 // Equivalent to "DXT3" in ASCII
 #define FOURCC_DXT5 0x35545844 // Equivalent to "DXT5" in ASCII
 
-GLuint loadDDS(const char * imagepath){
+struct DdsPixelformat {
+  unsigned dwSize;
+  unsigned dwFlags;
+  unsigned dwFourCC;
+  unsigned dwRGBBitCount;
+  unsigned dwRBitMask;
+  unsigned dwGBitMask;
+  unsigned dwBBitMask;
+  unsigned dwABitMask;
+};
 
-	unsigned char header[124];
+struct DdsHeader{
+  unsigned           dwSize;
+  unsigned           dwFlags;
+  unsigned           dwHeight;
+  unsigned           dwWidth;
+  unsigned           dwPitchOrLinearSize;
+  unsigned           dwDepth;
+  unsigned           dwMipMapCount;
+  unsigned           dwReserved1[11];
+  DdsPixelformat     ddspf;
+  unsigned           dwCaps;
+  unsigned           dwCaps2;
+  unsigned           dwCaps3;
+  unsigned           dwCaps4;
+  unsigned           dwReserved2;
+};
 
-	FILE *fp; 
- 
-	/* try to open the file */ 
-	fp = fopen(imagepath, "rb"); 
-	if (fp == NULL){
-		printf("%s could not be opened.\n", imagepath); 
-		return 0;
-	}
+GLuint loadDDS(const unsigned char* binary_image, unsigned size)
+{
+   const unsigned HEADER_SIZE = 128;
+   if (size < HEADER_SIZE)
+   {
+      printf("Not enough bytes (%u) for header size (%u)\n", size, HEADER_SIZE);
+      return 0;
+   }
+
+   if (strncmp((const char*)binary_image, "DDS ", 4) != 0)
+   {
+      printf("image doesn't start with 'DDS '\n");
+      return 0;
+   }
+
+   DdsHeader hdr;
+   memcpy(&hdr, binary_image + 4, sizeof(hdr));
    
-	/* verify the type of file */ 
-	char filecode[4]; 
-	fread(filecode, 1, 4, fp); 
-	if (strncmp(filecode, "DDS ", 4) != 0) { 
-		fclose(fp); 
-		return 0; 
-	}
-	
-	/* get the surface desc */ 
-	fread(&header, 124, 1, fp); 
-
-	unsigned int height      = *(unsigned int*)&(header[8 ]);
-	unsigned int width	     = *(unsigned int*)&(header[12]);
-	unsigned int linearSize	 = *(unsigned int*)&(header[16]);
-	unsigned int mipMapCount = *(unsigned int*)&(header[24]);
-	unsigned int fourCC      = *(unsigned int*)&(header[80]);
-
- 
-	unsigned char * buffer;
-	unsigned int bufsize;
-	/* how big is it going to be including all mipmaps? */ 
-	bufsize = mipMapCount > 1 ? linearSize * 2 : linearSize; 
-	buffer = (unsigned char*)malloc(bufsize * sizeof(unsigned char)); 
-	fread(buffer, 1, bufsize, fp); 
-	/* close the file pointer */ 
-	fclose(fp);
-
+	unsigned int height      = hdr.dwHeight;
+	unsigned int width	    = hdr.dwWidth;
+	unsigned int linearSize	 = hdr.dwPitchOrLinearSize;
+	unsigned int mipMapCount = hdr.dwMipMapCount;
+	unsigned int fourCC      = hdr.ddspf.dwFourCC;
+   
+	const unsigned char *buffer = binary_image + HEADER_SIZE;
 	unsigned int components  = (fourCC == FOURCC_DXT1) ? 3 : 4; 
 	unsigned int format;
 	switch(fourCC) 
@@ -64,7 +76,6 @@ GLuint loadDDS(const char * imagepath){
 		format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; 
 		break; 
 	default: 
-		free(buffer); 
 		return 0; 
 	}
 
@@ -95,8 +106,6 @@ GLuint loadDDS(const char * imagepath){
 		if(height < 1) height = 1;
 
 	} 
-
-	free(buffer); 
 
 	return textureID;
 
