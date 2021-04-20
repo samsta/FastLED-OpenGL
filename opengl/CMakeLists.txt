@@ -28,22 +28,22 @@ add_definitions(
 add_executable(toblob util/toblob.cpp)
 
 add_executable(tutorial18_particles
-	tutorial18_billboards_and_particles/tutorial18_particles.cpp
-	common/shader.cpp
-	common/shader.hpp
-	common/texture.cpp
-	common/texture.hpp
-	common/controls.cpp
-	common/controls.hpp
-	tutorial18_billboards_and_particles/Particle.fragmentshader
-	tutorial18_billboards_and_particles/Particle.vertexshader
-   ${CMAKE_BINARY_DIR}/LedTexture.cpp
+	tutorial18_particles.cpp
+	shader.cpp
+	shader.hpp
+	texture.cpp
+	texture.hpp
+	controls.cpp
+	controls.hpp
+	LED.fragmentshader
+	LED.vertexshader
+   "${CMAKE_BINARY_DIR}/LedTexture.cpp"
    )
 
 add_custom_command(
    OUTPUT LedTexture.cpp
-   COMMAND ./toblob  "${CMAKE_CURRENT_SOURCE_DIR}/tutorial18_billboards_and_particles/particle.DDS" ${CMAKE_BINARY_DIR} LedTexture
-   DEPENDS toblob tutorial18_billboards_and_particles/particle.DDS
+   COMMAND "${CMAKE_BINARY_DIR}/toblob"  "${CMAKE_CURRENT_SOURCE_DIR}/LED.DDS" "${CMAKE_BINARY_DIR}" LedTexture
+   DEPENDS toblob LED.DDS
 )
 
 target_link_libraries(tutorial18_particles

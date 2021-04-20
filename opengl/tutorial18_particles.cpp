@@ -15,16 +15,16 @@ GLFWwindow* window;
 using namespace glm;
 
 
-#include <common/shader.hpp>
-#include <common/texture.hpp>
-#include <common/controls.hpp>
+#include "shader.hpp"
+#include "texture.hpp"
+#include "controls.hpp"
 
 const std::string VERTEX_SHADER =
-#include "Particle.vertexshader"
+#include "LED.vertexshader"
 ;
 
 const std::string FRAGMENT_SHADER =
-#include "Particle.fragmentshader"
+#include "LED.fragmentshader"
 ;
 
 #include "LedTexture.cpp"
