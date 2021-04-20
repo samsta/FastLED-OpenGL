@@ -27,8 +27,8 @@ add_definitions(
 
 add_executable(toblob util/toblob.cpp)
 
-add_executable(tutorial18_particles
-	tutorial18_particles.cpp
+add_executable(flogl
+	flogl.cpp
 	shader.cpp
 	shader.hpp
 	texture.cpp
@@ -46,11 +46,11 @@ add_custom_command(
    DEPENDS toblob LED.DDS
 )
 
-target_link_libraries(tutorial18_particles
+target_link_libraries(flogl
 	${ALL_LIBS}
-)
+   )
 
 # Xcode and Visual working directories
-set_target_properties(tutorial18_particles PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tutorial18_billboards_and_particles/")
+set_target_properties(flogl PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tutorial18_billboards_and_particles/")
 
 SOURCE_GROUP(common REGULAR_EXPRESSION ".*/common/.*" )
