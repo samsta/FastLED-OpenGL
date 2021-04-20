@@ -144,7 +144,7 @@ LED leds[] =
 
 int MaxLEDs = sizeof(leds)/sizeof(*leds);
 
-int main( void )
+int flogl_main( void )
 {
 	// Initialise GLFW
 	if( !glfwInit() )

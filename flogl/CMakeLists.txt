@@ -2,7 +2,7 @@
 cmake_minimum_required (VERSION 3.0)
 project (FastLED-OpenGL-Lib)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules")
 
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
@@ -11,7 +11,7 @@ find_package(GLM REQUIRED)
 
 include_directories(
    .
-   ${CMAKE_BINARY_DIR}
+   ${CMAKE_CURRENT_BINARY_DIR}
    )
 
 set(ALL_LIBS
@@ -27,7 +27,7 @@ add_definitions(
 
 add_executable(toblob util/toblob.cpp)
 
-add_executable(flogl
+add_library(flogl
 	flogl.cpp
 	shader.cpp
 	shader.hpp
@@ -37,12 +37,12 @@ add_executable(flogl
 	controls.hpp
 	LED.fragmentshader
 	LED.vertexshader
-   "${CMAKE_BINARY_DIR}/LedTexture.cpp"
+   "${CMAKE_CURRENT_BINARY_DIR}/LedTexture.cpp"
    )
 
 add_custom_command(
    OUTPUT LedTexture.cpp
-   COMMAND "${CMAKE_BINARY_DIR}/toblob"  "${CMAKE_CURRENT_SOURCE_DIR}/LED.DDS" "${CMAKE_BINARY_DIR}" LedTexture
+   COMMAND "${CMAKE_CURRENT_BINARY_DIR}/toblob"  "${CMAKE_CURRENT_SOURCE_DIR}/LED.DDS" "${CMAKE_CURRENT_BINARY_DIR}" LedTexture
    DEPENDS toblob LED.DDS
 )
 
