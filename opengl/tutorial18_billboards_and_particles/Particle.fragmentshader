@@ -1,4 +1,4 @@
-#version 330 core
+R"(#version 330 core
 
 // Interpolated values from the vertex shaders
 in vec2 UV;
@@ -14,3 +14,4 @@ void main(){
 	color = texture( myTextureSampler, UV ) * particlecolor;
 
 }
+)"

@@ -19,6 +19,15 @@ using namespace glm;
 #include <common/texture.hpp>
 #include <common/controls.hpp>
 
+const std::string VERTEX_SHADER =
+#include "Particle.vertexshader"
+;
+
+const std::string FRAGMENT_SHADER =
+#include "Particle.fragmentshader"
+;
+
+
 // CPU representation of a particle
 struct Particle{
    Particle(double x, double y, double z): pos(glm::vec3(x,y,z)), size(0.5)
@@ -161,9 +170,9 @@ int main( void )
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Open a window and create its OpenGL context
-	window = glfwCreateWindow( 1024, 768, "Tutorial 18 - Particules", NULL, NULL);
+	window = glfwCreateWindow( 1024, 768, "FastLED OpenGL", NULL, NULL);
 	if( window == NULL ){
-		fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
+		fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible.\n" );
 		getchar();
 		glfwTerminate();
 		return -1;
@@ -202,8 +211,8 @@ int main( void )
 
 
 	// Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders( "Particle.vertexshader", "Particle.fragmentshader" );
-
+	GLuint programID = LoadShaders(VERTEX_SHADER.c_str(), FRAGMENT_SHADER.c_str());
+   
 	// Vertex shader
 	GLuint CameraRight_worldspace_ID  = glGetUniformLocation(programID, "CameraRight_worldspace");
 	GLuint CameraUp_worldspace_ID  = glGetUniformLocation(programID, "CameraUp_worldspace");
