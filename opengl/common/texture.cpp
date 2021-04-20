@@ -55,59 +55,59 @@ GLuint loadDDS(const unsigned char* binary_image, unsigned size)
    DdsHeader hdr;
    memcpy(&hdr, binary_image + 4, sizeof(hdr));
    
-	unsigned int height      = hdr.dwHeight;
-	unsigned int width	    = hdr.dwWidth;
-	unsigned int linearSize	 = hdr.dwPitchOrLinearSize;
-	unsigned int mipMapCount = hdr.dwMipMapCount;
-	unsigned int fourCC      = hdr.ddspf.dwFourCC;
+   unsigned int height      = hdr.dwHeight;
+   unsigned int width       = hdr.dwWidth;
+   unsigned int linearSize  = hdr.dwPitchOrLinearSize;
+   unsigned int mipMapCount = hdr.dwMipMapCount;
+   unsigned int fourCC      = hdr.ddspf.dwFourCC;
    
-	const unsigned char *buffer = binary_image + HEADER_SIZE;
-	unsigned int components  = (fourCC == FOURCC_DXT1) ? 3 : 4; 
-	unsigned int format;
-	switch(fourCC) 
-	{ 
-	case FOURCC_DXT1: 
-		format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT; 
-		break; 
-	case FOURCC_DXT3: 
-		format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT; 
-		break; 
-	case FOURCC_DXT5: 
-		format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; 
-		break; 
-	default: 
-		return 0; 
-	}
+   const unsigned char *buffer = binary_image + HEADER_SIZE;
+   unsigned int components  = (fourCC == FOURCC_DXT1) ? 3 : 4; 
+   unsigned int format;
+   switch(fourCC) 
+   { 
+   case FOURCC_DXT1: 
+      format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT; 
+      break; 
+   case FOURCC_DXT3: 
+      format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT; 
+      break; 
+   case FOURCC_DXT5: 
+      format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; 
+      break; 
+   default: 
+      return 0; 
+   }
 
-	// Create one OpenGL texture
-	GLuint textureID;
-	glGenTextures(1, &textureID);
+   // Create one OpenGL texture
+   GLuint textureID;
+   glGenTextures(1, &textureID);
 
-	// "Bind" the newly created texture : all future texture functions will modify this texture
-	glBindTexture(GL_TEXTURE_2D, textureID);
-	glPixelStorei(GL_UNPACK_ALIGNMENT,1);	
-	
-	unsigned int blockSize = (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ? 8 : 16; 
-	unsigned int offset = 0;
+   // "Bind" the newly created texture : all future texture functions will modify this texture
+   glBindTexture(GL_TEXTURE_2D, textureID);
+   glPixelStorei(GL_UNPACK_ALIGNMENT,1);  
+   
+   unsigned int blockSize = (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ? 8 : 16; 
+   unsigned int offset = 0;
 
-	/* load the mipmaps */ 
-	for (unsigned int level = 0; level < mipMapCount && (width || height); ++level) 
-	{ 
-		unsigned int size = ((width+3)/4)*((height+3)/4)*blockSize; 
-		glCompressedTexImage2D(GL_TEXTURE_2D, level, format, width, height,  
-			0, size, buffer + offset); 
-	 
-		offset += size; 
-		width  /= 2; 
-		height /= 2; 
+   /* load the mipmaps */ 
+   for (unsigned int level = 0; level < mipMapCount && (width || height); ++level) 
+   { 
+      unsigned int size = ((width+3)/4)*((height+3)/4)*blockSize; 
+      glCompressedTexImage2D(GL_TEXTURE_2D, level, format, width, height,  
+         0, size, buffer + offset); 
+    
+      offset += size; 
+      width  /= 2; 
+      height /= 2; 
 
-		// Deal with Non-Power-Of-Two textures. This code is not included in the webpage to reduce clutter.
-		if(width < 1) width = 1;
-		if(height < 1) height = 1;
+      // Deal with Non-Power-Of-Two textures. This code is not included in the webpage to reduce clutter.
+      if(width < 1) width = 1;
+      if(height < 1) height = 1;
 
-	} 
+   } 
 
-	return textureID;
+   return textureID;
 
 
 }
