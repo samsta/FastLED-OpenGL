@@ -14,6 +14,8 @@ using namespace std;
 
 #include "shader.hpp"
 
+namespace flogl {
+
 GLuint LoadShaders(const char * vertex_shader,const char * fragment_shader){
 
 	// Create the shaders
@@ -77,4 +79,4 @@ GLuint LoadShaders(const char * vertex_shader,const char * fragment_shader){
 	return ProgramID;
 }
 
-
+}

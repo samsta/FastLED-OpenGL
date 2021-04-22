@@ -1,3 +1,4 @@
+#include "flogl.hpp"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -7,18 +8,21 @@
 #include <GL/glew.h>
 
 #include <GLFW/glfw3.h>
-GLFWwindow* window;
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/norm.hpp>
-using namespace glm;
 
 
 #include "shader.hpp"
 #include "texture.hpp"
 #include "controls.hpp"
 
+namespace flogl {
+
+using namespace glm;
+
+namespace {
 const std::string VERTEX_SHADER =
 #include "LED.vertexshader"
 ;
@@ -26,132 +30,21 @@ const std::string VERTEX_SHADER =
 const std::string FRAGMENT_SHADER =
 #include "LED.fragmentshader"
 ;
+}
 
 #include "LedTexture.cpp"
 
 
-// CPU representation of a particle
-struct LED{
-   LED(double x, double y, double z): pos(glm::vec3(x,y,z)), size(0.5)
-      {
-      }
-	glm::vec3 pos;
-	unsigned char r,g,b,a; // Color
-	float size;
-};
-
-
-float vsc = 0.5;
-float hsc = 0.3;
-
-LED leds[] =
-{
-   LED(hsc*0,  vsc*30, -20),
-   LED(hsc*1,  vsc*29, -20),
-   LED(hsc*2,  vsc*28, -20),
-   LED(hsc*3,  vsc*27, -20),
-   LED(hsc*4,  vsc*26, -20),
-   LED(hsc*5,  vsc*25, -20),
-   LED(hsc*6,  vsc*24, -20),
-   LED(hsc*7,  vsc*23, -20),
-   LED(hsc*8,  vsc*22, -20),
-   LED(hsc*9,  vsc*21, -20),
-   LED(hsc*10, vsc*20, -20),
-   LED(hsc*11, vsc*19, -20),
-   LED(hsc*12, vsc*18, -20),
-   LED(hsc*13, vsc*17, -20),
-   LED(hsc*14, vsc*16, -20),
-   LED(hsc*15, vsc*15, -20),
-   LED(hsc*16, vsc*14, -20),
-   LED(hsc*17, vsc*13, -20),
-   LED(hsc*18, vsc*12, -20),
-   LED(hsc*19, vsc*11, -20),
-   LED(hsc*20, vsc*10, -20),
-   LED(hsc*21, vsc*9, -20),
-   LED(hsc*22, vsc*8, -20),
-   LED(hsc*23, vsc*7, -20),
-   LED(hsc*24, vsc*6, -20),
-   LED(hsc*25, vsc*5, -20),
-   LED(hsc*26, vsc*4, -20),
-   LED(hsc*27, vsc*3, -20),
-   LED(hsc*28, vsc*2, -20),
-   LED(hsc*29, vsc*1, -20),
-   LED(hsc*30, vsc*0, -20),
-
-   LED(hsc*28,  0, -20),
-   LED(hsc*26,  0, -20),
-   LED(hsc*24,  0, -20),
-   LED(hsc*22,  0, -20),
-   LED(hsc*20,  0, -20),
-   LED(hsc*18,  0, -20),
-   LED(hsc*16,  0, -20),
-   LED(hsc*14,  0, -20),
-   LED(hsc*12,  0, -20),
-   LED(hsc*10,  0, -20),
-   LED(hsc*8,   0, -20),
-   LED(hsc*6,   0, -20),
-   LED(hsc*4,   0, -20),
-   LED(hsc*2,   0, -20),
-   LED(hsc*0,   0, -20),
-   LED(-hsc*2,   0, -20),
-   LED(-hsc*4,   0, -20),
-   LED(-hsc*6,   0, -20),
-   LED(-hsc*8,   0, -20),
-   LED(-hsc*10,  0, -20),
-   LED(-hsc*12,  0, -20),
-   LED(-hsc*14,  0, -20),
-   LED(-hsc*16,  0, -20),
-   LED(-hsc*18,  0, -20),
-   LED(-hsc*20,  0, -20),
-   LED(-hsc*22,  0, -20),
-   LED(-hsc*24,  0, -20),
-   LED(-hsc*26,  0, -20),
-   LED(-hsc*28,  0, -20),
-
-   
-   LED(-hsc*30, vsc*0, -20),
-   LED(-hsc*29, vsc*1, -20),
-   LED(-hsc*28, vsc*2, -20),
-   LED(-hsc*27, vsc*3, -20),
-   LED(-hsc*26, vsc*4, -20),
-   LED(-hsc*25, vsc*5, -20),
-   LED(-hsc*24, vsc*6, -20),
-   LED(-hsc*23, vsc*7, -20),
-   LED(-hsc*22, vsc*8, -20),
-   LED(-hsc*21, vsc*9, -20),
-   LED(-hsc*20, vsc*10, -20),
-   LED(-hsc*19, vsc*11, -20),
-   LED(-hsc*18, vsc*12, -20),
-   LED(-hsc*17, vsc*13, -20),
-   LED(-hsc*16, vsc*14, -20),
-   LED(-hsc*15, vsc*15, -20),
-   LED(-hsc*14, vsc*16, -20),
-   LED(-hsc*13, vsc*17, -20),
-   LED(-hsc*12, vsc*18, -20),
-   LED(-hsc*11, vsc*19, -20),
-   LED(-hsc*10, vsc*20, -20),
-   LED(-hsc*9,  vsc*21, -20),
-   LED(-hsc*8,  vsc*22, -20),
-   LED(-hsc*7,  vsc*23, -20),
-   LED(-hsc*6,  vsc*24, -20),
-   LED(-hsc*5,  vsc*25, -20),
-   LED(-hsc*4,  vsc*26, -20),
-   LED(-hsc*3,  vsc*27, -20),
-   LED(-hsc*2,  vsc*28, -20),
-   LED(-hsc*1,  vsc*29, -20),
-   LED(-hsc*0,  vsc*30, -20),
-};
-
-int MaxLEDs = sizeof(leds)/sizeof(*leds);
-
-int flogl_main( void )
+Flogl::Flogl(LED* leds, unsigned num_leds):
+      m_leds(leds),
+      m_num_leds(num_leds)
 {
 	// Initialise GLFW
-	if( !glfwInit() )
+   if( !glfwInit() )
 	{
 		fprintf( stderr, "Failed to initialize GLFW\n" );
 		getchar();
-		return -1;
+		return;
 	}
 
 	glfwWindowHint(GLFW_SAMPLES, 4);
@@ -162,14 +55,14 @@ int flogl_main( void )
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Open a window and create its OpenGL context
-	window = glfwCreateWindow( 1024, 768, "FastLED OpenGL", NULL, NULL);
-	if( window == NULL ){
+	m_window = glfwCreateWindow( 1024, 768, "FastLED OpenGL", NULL, NULL);
+	if(m_window == NULL ){
 		fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible.\n" );
 		getchar();
 		glfwTerminate();
-		return -1;
+		return;
 	}
-	glfwMakeContextCurrent(window);
+	glfwMakeContextCurrent(m_window);
 
 	// Initialize GLEW
 	glewExperimental = true; // Needed for core profile
@@ -177,17 +70,17 @@ int flogl_main( void )
 		fprintf(stderr, "Failed to initialize GLEW\n");
 		getchar();
 		glfwTerminate();
-		return -1;
+		return;
 	}
 
 	// Ensure we can capture the escape key being pressed below
-	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-    // Hide the mouse and enable unlimited mouvement
-   //  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_TRUE);
+   // Hide the mouse and enable unlimited mouvement
+   glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
-    // Set the mouse at the center of the screen
-    glfwPollEvents();
-    glfwSetCursorPos(window, 1024/2, 768/2);
+   // Set the mouse at the center of the screen
+   glfwPollEvents();
+   glfwSetCursorPos(m_window, 1024/2, 768/2);
 
 	// black background
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -214,8 +107,8 @@ int flogl_main( void )
 	GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");
 
 	
-	static GLfloat* g_led_position_size_data = new GLfloat[MaxLEDs * 4];
-	static GLubyte* g_led_color_data         = new GLubyte[MaxLEDs * 4];
+	static GLfloat* g_led_position_size_data = new GLfloat[m_num_leds * 4];
+	static GLubyte* g_led_color_data         = new GLubyte[m_num_leds * 4];
 
 	GLuint Texture = loadDDS(blobs::LedTexture, sizeof(blobs::LedTexture));
 
@@ -237,14 +130,14 @@ int flogl_main( void )
 	glGenBuffers(1, &leds_position_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, leds_position_buffer);
 	// Initialize with empty (NULL) buffer : it will be updated later, each frame.
-	glBufferData(GL_ARRAY_BUFFER, MaxLEDs * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, m_num_leds * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
 
 	// The VBO containing the colors of the leds
 	GLuint leds_color_buffer;
 	glGenBuffers(1, &leds_color_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, leds_color_buffer);
 	// Initialize with empty (NULL) buffer : it will be updated later, each frame.
-	glBufferData(GL_ARRAY_BUFFER, MaxLEDs * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, m_num_leds * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
 
 	
 	double lastTime = glfwGetTime();
@@ -258,7 +151,7 @@ int flogl_main( void )
 		lastTime = currentTime;
 
 
-		computeMatricesFromInputs();
+		computeMatricesFromInputs(m_window);
 		glm::mat4 ProjectionMatrix = getProjectionMatrix();
 		glm::mat4 ViewMatrix = getViewMatrix();
       
@@ -272,26 +165,25 @@ int flogl_main( void )
 		glm::mat4 ViewProjectionMatrix = ProjectionMatrix * ViewMatrix;
  
 
-		for(int i=0; i<MaxLEDs; i++){
+		for(int i=0; i<m_num_leds; i++){
 
-			LED& p = leds[i]; // shortcut
+			LED& p = m_leds[i]; // shortcut
 
          p.r = (sin(5*lastTime+float(i)/(10))+1)*127;
          p.g = (cos(5*lastTime+float(i)/(10))+1)*127;
          p.b = (sin(10*lastTime+float(i)/(10))+1)*127;
-         p.a = 255;
          
          // Fill the GPU buffer
-         g_led_position_size_data[4*i+0] = p.pos.x;
-         g_led_position_size_data[4*i+1] = p.pos.y;
-         g_led_position_size_data[4*i+2] = p.pos.z;
+         g_led_position_size_data[4*i+0] = p.x;
+         g_led_position_size_data[4*i+1] = p.y;
+         g_led_position_size_data[4*i+2] = p.z;
 			
          g_led_position_size_data[4*i+3] = p.size;
 			
          g_led_color_data[4*i+0] = p.r;
          g_led_color_data[4*i+1] = p.g;
          g_led_color_data[4*i+2] = p.b;
-         g_led_color_data[4*i+3] = p.a;
+         g_led_color_data[4*i+3] = 255;
          
       }
 
@@ -302,12 +194,12 @@ int flogl_main( void )
 
 
 		glBindBuffer(GL_ARRAY_BUFFER, leds_position_buffer);
-		glBufferData(GL_ARRAY_BUFFER, MaxLEDs * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
-		glBufferSubData(GL_ARRAY_BUFFER, 0, MaxLEDs * sizeof(GLfloat) * 4, g_led_position_size_data);
+		glBufferData(GL_ARRAY_BUFFER, m_num_leds * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+		glBufferSubData(GL_ARRAY_BUFFER, 0, m_num_leds * sizeof(GLfloat) * 4, g_led_position_size_data);
 
 		glBindBuffer(GL_ARRAY_BUFFER, leds_color_buffer);
-		glBufferData(GL_ARRAY_BUFFER, MaxLEDs * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
-		glBufferSubData(GL_ARRAY_BUFFER, 0, MaxLEDs * sizeof(GLubyte) * 4, g_led_color_data);
+		glBufferData(GL_ARRAY_BUFFER, m_num_leds * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+		glBufferSubData(GL_ARRAY_BUFFER, 0, m_num_leds * sizeof(GLubyte) * 4, g_led_color_data);
 
 
 		glEnable(GL_BLEND);
@@ -377,19 +269,19 @@ int flogl_main( void )
 		// This is equivalent to :
 		// for(i in LEDsCount) : glDrawArrays(GL_TRIANGLE_STRIP, 0, 4), 
 		// but faster.
-		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, MaxLEDs);
+		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, m_num_leds);
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glDisableVertexAttribArray(2);
 
 		// Swap buffers
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(m_window);
 		glfwPollEvents();
 
 	} // Check if the ESC key was pressed or the window was closed
-	while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-		   glfwWindowShouldClose(window) == 0 );
+	while( glfwGetKey(m_window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
+		   glfwWindowShouldClose(m_window) == 0 );
 
 
 	delete[] g_led_position_size_data;
@@ -404,7 +296,6 @@ int flogl_main( void )
 	
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();
-
-	return 0;
 }
 
+}
