@@ -1,4 +1,6 @@
 #include "flogl/flogl.hpp"
+#include <math.h>
+#include <unistd.h>
 
 float vsc = 0.5;
 float hsc = 0.3;
@@ -103,8 +105,34 @@ LED leds[] =
    LED(-hsc*0,  vsc*30, -20),
 };
 
+void loop();
+
 int main()
 {
-   flogl::Flogl(leds, sizeof(leds)/sizeof(*leds));
+   flogl::Flogl flogl(leds, sizeof(leds)/sizeof(*leds));
+
+   do {
+      usleep(30000);
+      loop();
+   } while(flogl.draw());
+   
    return 0;
+}
+
+void loop()
+{
+   static unsigned cnt = 0;
+   const unsigned num_leds = sizeof(leds)/sizeof(*leds);
+   
+   for(int i=0; i < num_leds; i++)
+   {
+      float t = float(cnt)/10;
+      float a = 2 * 3.141 * float(i)/num_leds;
+      
+      leds[i].r = (sin(t  + a) + 1) * 127;
+      leds[i].g = (cos(t  + a) + 1) * 127;
+      leds[i].b = (sin(-t - a) + 1) * 127;
+   }
+
+   cnt++;
 }

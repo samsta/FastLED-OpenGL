@@ -1,8 +1,6 @@
 #ifndef FLOGL_HPP
 #define FLOGL_HPP
 
-struct GLFWwindow;
-
 namespace flogl {
 
 struct LED{
@@ -20,12 +18,13 @@ class Flogl
 {
 public:
    Flogl(LED* leds, unsigned num_leds);
+
+   bool draw();
    
+   ~Flogl();
 private:
-   LED*           m_leds;
-   const unsigned m_num_leds;
-   
-   GLFWwindow*    m_window;
+   class Impl;
+   Impl& m_i;
 };
 
 }
