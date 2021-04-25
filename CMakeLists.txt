@@ -2,6 +2,9 @@ cmake_minimum_required (VERSION 3.0)
 project (FastLED-OpenGL)
 
 add_subdirectory(flogl)
+add_definitions(
+   -std=c++11
+   )
 
 include_directories(
    .
