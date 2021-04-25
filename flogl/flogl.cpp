@@ -40,6 +40,7 @@ public:
    Impl(LED* leds, unsigned num_leds);  
    ~Impl();
 
+   void add(CRGB* leds, unsigned num_leds);
    bool draw();
       
    LED*           m_leds;
@@ -157,6 +158,15 @@ Flogl::Impl::Impl(LED* leds, unsigned num_leds):
 
 }
 
+void Flogl::Impl::add(CRGB* leds, unsigned num_leds)
+{
+   for (unsigned k = 0; k < num_leds && k < m_num_leds; k++)
+   {
+      m_leds[k].led = &leds[k];
+   }
+}
+
+
 bool Flogl::Impl::draw()
 {
    // Clear the screen
@@ -186,9 +196,9 @@ bool Flogl::Impl::draw()
       
       m_led_position_size_data[4*i+3] = p.size;
       
-      m_led_color_data[4*i+0] = p.r;
-      m_led_color_data[4*i+1] = p.g;
-      m_led_color_data[4*i+2] = p.b;
+      m_led_color_data[4*i+0] = p.led ? p.led->red : 0;
+      m_led_color_data[4*i+1] = p.led ? p.led->green : 0;
+      m_led_color_data[4*i+2] = p.led ? p.led->blue : 0;
       m_led_color_data[4*i+3] = 255;
       
    }
@@ -310,6 +320,11 @@ Flogl::Impl::~Impl()
 Flogl::Flogl(LED* leds, unsigned num_leds):
    m_i(*new Flogl::Impl(leds, num_leds))
 {
+}
+
+void Flogl::add(CRGB* leds, unsigned num_leds)
+{
+   m_i.add(leds, num_leds);
 }
 
 bool Flogl::draw()

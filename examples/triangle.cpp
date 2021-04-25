@@ -1,4 +1,5 @@
 #include "flogl/flogl.hpp"
+#include <FastLED.h>
 #include <math.h>
 #include <unistd.h>
 
@@ -7,7 +8,7 @@ float hsc = 0.3;
 
 using flogl::LED;
 
-LED leds[] =
+LED led_coords[] =
 {
    { 0.000000, 15.000000, -20},
    { 0.300000, 14.500000, -20},
@@ -104,12 +105,17 @@ LED leds[] =
    {-0.000000, 15.000000, -20}
 };
 
+const int NUM_LEDS = sizeof(led_coords)/sizeof(*led_coords);
+
+CRGB leds[NUM_LEDS];
+
 void loop();
 
 int main()
 {
-   flogl::Flogl flogl(leds, sizeof(leds)/sizeof(*leds));
-
+   flogl::Flogl flogl(led_coords, NUM_LEDS);
+   flogl.add(leds, NUM_LEDS);
+   
    do {
       usleep(30000);
       loop();
@@ -121,16 +127,15 @@ int main()
 void loop()
 {
    static unsigned cnt = 0;
-   const unsigned num_leds = sizeof(leds)/sizeof(*leds);
    
-   for(int i=0; i < num_leds; i++)
+   for(int i=0; i < NUM_LEDS; i++)
    {
       float t = float(cnt)/10;
-      float a = 2 * 3.141 * float(i)/num_leds;
+      float a = 2 * 3.141 * float(i)/NUM_LEDS;
       
-      leds[i].r = (sin(t  + a) + 1) * 127;
-      leds[i].g = (cos(t  + a) + 1) * 127;
-      leds[i].b = (sin(-t - a) + 1) * 127;
+      leds[i].red   = (sin(t  + a) + 1) * 127;
+      leds[i].green = (cos(t  + a) + 1) * 127;
+      leds[i].blue  = (sin(-t - a) + 1) * 127;
    }
 
    cnt++;

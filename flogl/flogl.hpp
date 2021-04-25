@@ -1,23 +1,29 @@
 #ifndef FLOGL_HPP
 #define FLOGL_HPP
 
+#include "platform.h"
+#include "FastLED.h"
+
 namespace flogl {
 
 struct LED{
    LED(double x, double y, double z):
          x(x), y(y), z(z),
-         size(0.5)
+         size(0.5),
+         led(NULL)
    {
    }
 	float x, y, z;
-	unsigned char r, g, b;
 	float size;
+   CRGB* led;
 };
 
 class Flogl
 {
 public:
-   Flogl(LED* leds, unsigned num_leds);
+   Flogl(LED* led_coordinates, unsigned num_leds);
+
+   void add(CRGB* leds, unsigned num_leds);
 
    bool draw();
    
