@@ -7,6 +7,10 @@
 
 namespace flogl {
 
+namespace {
+const double DEBCOUNCE_TIME(0.1); // 100ms
+}
+
 Window::Window():
       m_window(NULL),
       m_position(0, 8, 5),
@@ -17,7 +21,8 @@ Window::Window():
       m_mouse_speed(0.001f),
       m_view_matrix(),
       m_projection_matrix(),
-      m_last_time(0.0)
+      m_last_time(0.0),
+      m_control_mouse(false)
 {
    // Initialise GLFW
    if(not glfwInit())
@@ -43,6 +48,8 @@ Window::Window():
       exit(EXIT_FAILURE);
    }
    glfwMakeContextCurrent(m_window);
+   glfwSetWindowUserPointer(m_window, this);
+   glfwSetKeyCallback(m_window, &Window::doKeyCallback);
       
    // Initialize GLEW
    glewExperimental = true; // Needed for core profile
@@ -54,12 +61,16 @@ Window::Window():
       
    // Ensure we can capture the escape key being pressed below
    glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_TRUE);
-   // Hide the mouse and enable unlimited mouvement
-   glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+   if (m_control_mouse)
+   {
+      // Hide the mouse and enable unlimited mouvement
+      glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
       
-   // Set the mouse at the center of the screen
-   glfwPollEvents();
-   glfwSetCursorPos(m_window, width/2, height/2);
+      // Set the mouse at the center of the screen
+      glfwPollEvents();
+      glfwSetCursorPos(m_window, width/2, height/2);
+   }
 
    // black background
    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -82,18 +93,21 @@ void Window::processInputs()
 	double currentTime = glfwGetTime();
 	float deltaTime = float(currentTime - m_last_time);
 
-	// Get mouse position
-	double xpos, ypos;
-	glfwGetCursorPos(m_window, &xpos, &ypos);
 	int width, height;
 	glfwGetWindowSize(m_window, &width, &height);
 
-	// Reset mouse position for next frame
-	glfwSetCursorPos(m_window, width/2, height/2);
+   if (m_control_mouse)
+   {
+      double xpos, ypos;
+      glfwGetCursorPos(m_window, &xpos, &ypos);
 
-	// Compute new orientation
-	m_horizontal_angle_rad += m_mouse_speed * float(width/2 - xpos );
-	m_vertical_angle_rad   += m_mouse_speed * float(height/2 - ypos );
+      // Reset mouse position for next frame
+      glfwSetCursorPos(m_window, width/2, height/2);
+
+      // Compute new orientation
+      m_horizontal_angle_rad += m_mouse_speed * float(width/2 - xpos );
+      m_vertical_angle_rad   += m_mouse_speed * float(height/2 - ypos );
+   }
 
 	// Direction : Spherical coordinates to Cartesian coordinates conversion
 	glm::vec3 direction(
@@ -112,13 +126,13 @@ void Window::processInputs()
 	// Up vector
 	glm::vec3 up = glm::cross( right, direction );
 
-	// Move forward
+	// Move up
 	if (glfwGetKey(m_window, GLFW_KEY_UP) == GLFW_PRESS){
-		m_position += direction * deltaTime * m_speed;
+		m_position += up * deltaTime * m_speed;
 	}
-	// Move backward
+	// Move down
 	if (glfwGetKey(m_window, GLFW_KEY_DOWN) == GLFW_PRESS){
-		m_position -= direction * deltaTime * m_speed;
+		m_position -= up * deltaTime * m_speed;
 	}
 	// Strafe right
 	if (glfwGetKey(m_window, GLFW_KEY_RIGHT) == GLFW_PRESS){
@@ -163,6 +177,40 @@ bool Window::shouldClose() const
 {
    return glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS or
           glfwWindowShouldClose(m_window);
+}
+
+void Window::doKeyCallback(GLFWwindow* window, int key, int scan_code, int action, int mods)
+{
+   static_cast<Window*>(glfwGetWindowUserPointer(window))->keyCallback(key, scan_code, action, mods);
+}
+
+void Window::keyCallback(int key, int scan_code, int action, int mods)
+{
+   if (action == GLFW_PRESS)
+   {
+      switch(key) {
+      case GLFW_KEY_M:
+         // Toggle mouse control
+         m_control_mouse = not m_control_mouse;
+         
+         if (m_control_mouse)
+         {
+            // Hide the mouse and enable unlimited mouvement
+            glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            
+            // Set the mouse at the center of the screen
+            glfwPollEvents();
+            int width, height;
+            glfwGetWindowSize(m_window, &width, &height);
+            glfwSetCursorPos(m_window, width/2, height/2);
+         }
+         else
+         {
+            glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+         }
+         break;
+      }
+   }
 }
 
 

@@ -23,6 +23,9 @@ public:
    bool shouldClose() const;
    
 private:
+   static void doKeyCallback(GLFWwindow* window, int key, int scan_code, int action, int mods);
+   void keyCallback(int key, int scan_code, int action, int mods);
+   
    GLFWwindow*  m_window;
    glm::vec3    m_position;
    float        m_horizontal_angle_rad;
@@ -34,6 +37,8 @@ private:
    glm::mat4    m_view_matrix;
    glm::mat4    m_projection_matrix;
    double       m_last_time;
+
+   bool         m_control_mouse;
 };
 
 }
