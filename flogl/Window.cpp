@@ -141,8 +141,8 @@ void Window::processInputs()
 		m_position -= right * deltaTime * m_speed;
 	}
 
-	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	m_projection_matrix = glm::perspective(glm::radians(m_fov_deg), 4.0f / 3.0f, 0.1f, 100.0f);
+	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
+	m_projection_matrix = glm::perspective(glm::radians(m_fov_deg), 4.0f / 3.0f, 0.1f, 1000.0f);
 	// Camera matrix
 	m_view_matrix = glm::lookAt(
 								m_position,           // Camera is here
