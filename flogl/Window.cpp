@@ -1,4 +1,5 @@
 #include "Window.hpp"
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -18,6 +19,7 @@ Window::Window():
       m_vertical_angle_rad(0.0f),
       m_fov_deg(45.0f),
       m_speed(20.0f),
+      m_scroll_speed(1.0f),
       m_mouse_speed(0.001f),
       m_view_matrix(),
       m_projection_matrix(),
@@ -50,7 +52,8 @@ Window::Window():
    glfwMakeContextCurrent(m_window);
    glfwSetWindowUserPointer(m_window, this);
    glfwSetKeyCallback(m_window, &Window::doKeyCallback);
-      
+   glfwSetScrollCallback(m_window, &Window::doScrollCallback);
+
    // Initialize GLEW
    glewExperimental = true; // Needed for core profile
    if (glewInit() != GLEW_OK) {
@@ -109,20 +112,15 @@ void Window::processInputs()
       m_vertical_angle_rad   += m_mouse_speed * float(height/2 - ypos );
    }
 
-	// Direction : Spherical coordinates to Cartesian coordinates conversion
-	glm::vec3 direction(
-		cos(m_vertical_angle_rad) * sin(m_horizontal_angle_rad), 
-		sin(m_vertical_angle_rad),
-		cos(m_vertical_angle_rad) * cos(m_horizontal_angle_rad)
-	);
-	
+   glm::vec3 direction(getDirection());
+   
 	// Right vector
 	glm::vec3 right = glm::vec3(
 		sin(m_horizontal_angle_rad - 3.14f/2.0f), 
 		0,
 		cos(m_horizontal_angle_rad - 3.14f/2.0f)
 	);
-	
+   
 	// Up vector
 	glm::vec3 up = glm::cross( right, direction );
 
@@ -166,6 +164,17 @@ const glm::mat4& Window::getProjectionMatrix() const
 {
    return m_projection_matrix;
 }
+
+glm::vec3 Window::getDirection() const
+{
+	// Direction : Spherical coordinates to Cartesian coordinates conversion
+	return glm::vec3(
+		cos(m_vertical_angle_rad) * sin(m_horizontal_angle_rad), 
+		sin(m_vertical_angle_rad),
+		cos(m_vertical_angle_rad) * cos(m_horizontal_angle_rad)
+	);
+}
+
 
 void Window::swapBuffers()
 {
@@ -212,6 +221,18 @@ void Window::keyCallback(int key, int scan_code, int action, int mods)
       }
    }
 }
+
+void Window::doScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+   static_cast<Window*>(glfwGetWindowUserPointer(window))->scrollCallback(xoffset, yoffset);
+}
+
+void Window::scrollCallback(float xoffset, float yoffset)
+{
+   m_position += getDirection() * yoffset * m_scroll_speed;
+}
+
+
 
 
 }

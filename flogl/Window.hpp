@@ -23,8 +23,13 @@ public:
    bool shouldClose() const;
    
 private:
+   glm::vec3 getDirection() const;
+   
    static void doKeyCallback(GLFWwindow* window, int key, int scan_code, int action, int mods);
    void keyCallback(int key, int scan_code, int action, int mods);
+
+   static void doScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+   void scrollCallback(float xoffset, float yoffset);
    
    GLFWwindow*  m_window;
    glm::vec3    m_position;
@@ -32,6 +37,7 @@ private:
    float        m_vertical_angle_rad;
    float        m_fov_deg;
    float        m_speed;
+   float        m_scroll_speed;
    float        m_mouse_speed;
 
    glm::mat4    m_view_matrix;
