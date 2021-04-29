@@ -82,7 +82,9 @@ Flogl::Impl::Impl(LED* leds, unsigned num_leds):
    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
    // Open a window and create its OpenGL context
-   m_window = glfwCreateWindow(1024, 768, "FastLED OpenGL", NULL, NULL);
+   int width = 1024;
+   int height = 768;
+   m_window = glfwCreateWindow(width, height, "FastLED OpenGL", NULL, NULL);
    if(m_window == NULL ){
       fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible.\n" );
       glfwTerminate();
@@ -105,7 +107,7 @@ Flogl::Impl::Impl(LED* leds, unsigned num_leds):
       
    // Set the mouse at the center of the screen
    glfwPollEvents();
-   glfwSetCursorPos(m_window, 1024/2, 768/2);
+   glfwSetCursorPos(m_window, width/2, height/2);
       
    // black background
    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);

@@ -31,7 +31,7 @@ float verticalAngle = 0.0f;
 float initialFoV = 45.0f;
 
 float speed = 3.0f; // 3 units / second
-float mouseSpeed = 0.005f;
+float mouseSpeed = 0.001f;
 
 
 
@@ -47,13 +47,15 @@ void computeMatricesFromInputs(GLFWwindow* window){
 	// Get mouse position
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
 
 	// Reset mouse position for next frame
-	glfwSetCursorPos(window, 1024/2, 768/2);
+	glfwSetCursorPos(window, width/2, height/2);
 
 	// Compute new orientation
-	//horizontalAngle += mouseSpeed * float(1024/2 - xpos );
-	//verticalAngle   += mouseSpeed * float( 768/2 - ypos );
+	horizontalAngle += mouseSpeed * float(width/2 - xpos );
+	verticalAngle   += mouseSpeed * float(height/2 - ypos );
 
 	// Direction : Spherical coordinates to Cartesian coordinates conversion
 	glm::vec3 direction(

@@ -7,9 +7,9 @@
 namespace flogl {
 
 struct LED{
-   LED(double x, double y, double z):
+   LED(float x, float y, float z, float size = 0.5):
          x(x), y(y), z(z),
-         size(0.5),
+         size(size),
          led(NULL)
    {
    }
