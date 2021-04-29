@@ -28,11 +28,8 @@ add_executable(toblob util/toblob.cpp)
 add_library(flogl
 	flogl.cpp
 	shader.cpp
-	shader.hpp
 	texture.cpp
-	texture.hpp
-	controls.cpp
-	controls.hpp
+	Window.cpp
 	LED.fragmentshader
 	LED.vertexshader
    "${CMAKE_CURRENT_BINARY_DIR}/LedTexture.cpp"

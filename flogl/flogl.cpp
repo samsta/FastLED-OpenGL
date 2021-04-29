@@ -5,18 +5,16 @@
 #include <vector>
 #include <algorithm>
 
-#include <GL/glew.h>
-
-#include <GLFW/glfw3.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/norm.hpp>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 
 #include "shader.hpp"
 #include "texture.hpp"
-#include "controls.hpp"
+#include "Window.hpp"
 
 namespace flogl {
 
@@ -45,7 +43,7 @@ public:
       
    LED*           m_leds;
    const unsigned m_num_leds;
-   GLFWwindow*    m_window;
+   Window         m_window;
    GLuint         m_vertex_array_id;
    GLuint         m_program_id;
    GLfloat*       m_led_position_size_data;
@@ -63,55 +61,10 @@ public:
 Flogl::Impl::Impl(LED* leds, unsigned num_leds):
    m_leds(leds),
    m_num_leds(num_leds),
-   m_window(NULL),
+   m_window(),
    m_led_position_size_data(new GLfloat[num_leds * 4]),
    m_led_color_data(new GLubyte[num_leds * 4])
 {
-   // Initialise GLFW
-   if(not glfwInit())
-   {
-      fprintf( stderr, "Failed to initialize GLFW\n" );
-      return;
-   }
-      
-   glfwWindowHint(GLFW_SAMPLES, 4);
-   glfwWindowHint(GLFW_RESIZABLE,GL_FALSE);
-   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-   // Open a window and create its OpenGL context
-   int width = 1024;
-   int height = 768;
-   m_window = glfwCreateWindow(width, height, "FastLED OpenGL", NULL, NULL);
-   if(m_window == NULL ){
-      fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible.\n" );
-      glfwTerminate();
-      return;
-   }
-   glfwMakeContextCurrent(m_window);
-      
-   // Initialize GLEW
-   glewExperimental = true; // Needed for core profile
-   if (glewInit() != GLEW_OK) {
-      fprintf(stderr, "Failed to initialize GLEW\n");
-      glfwTerminate();
-      return;
-   }
-      
-   // Ensure we can capture the escape key being pressed below
-   glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_TRUE);
-   // Hide the mouse and enable unlimited mouvement
-   glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-      
-   // Set the mouse at the center of the screen
-   glfwPollEvents();
-   glfwSetCursorPos(m_window, width/2, height/2);
-      
-   // black background
-   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-      
    // Enable depth test
    glEnable(GL_DEPTH_TEST);
    // Accept fragment if it closer to the camera than the former one
@@ -173,18 +126,16 @@ bool Flogl::Impl::draw()
 {
    // Clear the screen
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-   computeMatricesFromInputs(m_window);
-   glm::mat4 ProjectionMatrix = getProjectionMatrix();
-   glm::mat4 ViewMatrix = getViewMatrix();
-   
-   
+   m_window.processInputs();
+
+   const glm::mat4& view_matrix = m_window.getViewMatrix();
+      
    // We will need the camera's position in order to sort the leds
    // w.r.t the camera's distance.
-   // There should be a getCameraPosition() function in common/controls.cpp, 
    // but this works too.
-   glm::vec3 CameraPosition(glm::inverse(ViewMatrix)[3]);
+   glm::vec3 CameraPosition(glm::inverse(view_matrix)[3]);
    
-   glm::mat4 ViewProjectionMatrix = ProjectionMatrix * ViewMatrix;
+   glm::mat4 ViewProjectionMatrix = m_window.getProjectionMatrix() * view_matrix;
    
    
    for(int i=0; i<m_num_leds; i++){
@@ -233,8 +184,8 @@ bool Flogl::Impl::draw()
    glUniform1i(m_texture_id, 0);
    
    // Same as the billboards tutorial
-   glUniform3f(m_camera_right_worldspace_id, ViewMatrix[0][0], ViewMatrix[1][0], ViewMatrix[2][0]);
-   glUniform3f(m_camera_up_worldspace_id   , ViewMatrix[0][1], ViewMatrix[1][1], ViewMatrix[2][1]);
+   glUniform3f(m_camera_right_worldspace_id, view_matrix[0][0], view_matrix[1][0], view_matrix[2][0]);
+   glUniform3f(m_camera_up_worldspace_id   , view_matrix[0][1], view_matrix[1][1], view_matrix[2][1]);
    
    glUniformMatrix4fv(m_view_proj_matrix_id, 1, GL_FALSE, &ViewProjectionMatrix[0][0]);
    
@@ -285,7 +236,7 @@ bool Flogl::Impl::draw()
    // Draw the leds !
    // This draws many times a small triangle_strip (which looks like a quad).
    // This is equivalent to :
-   // for(i in LEDsCount) : glDrawArrays(GL_TRIANGLE_STRIP, 0, 4), 
+   // for(i in m_num_leds) : glDrawArrays(GL_TRIANGLE_STRIP, 0, 4), 
    // but faster.
    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, m_num_leds);
    
@@ -293,13 +244,9 @@ bool Flogl::Impl::draw()
    glDisableVertexAttribArray(1);
    glDisableVertexAttribArray(2);
    
-   // Swap buffers
-   glfwSwapBuffers(m_window);
-   glfwPollEvents();
+   m_window.swapBuffers();
    
-   
-   return glfwGetKey(m_window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-          glfwWindowShouldClose(m_window) == 0;
+   return not m_window.shouldClose();
 }
 
 Flogl::Impl::~Impl()
@@ -314,9 +261,6 @@ Flogl::Impl::~Impl()
    glDeleteProgram(m_program_id);
    glDeleteTextures(1, &m_texture);
    glDeleteVertexArrays(1, &m_vertex_array_id);
-   
-   // Close OpenGL window and terminate GLFW
-   glfwTerminate();   
 }
 
 Flogl::Flogl(LED* leds, unsigned num_leds):
