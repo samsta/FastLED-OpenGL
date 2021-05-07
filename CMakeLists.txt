@@ -10,15 +10,25 @@ endif()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/flogl/cmake/Modules")
 find_package(FastLED REQUIRED)
 
-add_subdirectory(flogl)
-add_definitions(
-   -std=c++11
-   )
-
 include_directories(
+   ${GLFW_INCLUDE_DIR}
+   ${GLM_INCLUDE_DIR}
    flogl
    .
    )
+
+add_definitions(
+   -std=c++11
+   -DGLFW_INCLUDE_GLCOREARB=1
+   -DGLFW_INCLUDE_GLEXT=1
+   # the following two are warnings about deprecations
+   # on mac OS. Potentially some work required in the future...
+   -DGL_SILENCE_DEPRECATION=1
+   -Wno-deprecated-register
+   )
+
+add_subdirectory(flogl)
+
 
 add_executable(triangle examples/triangle.cpp)
 

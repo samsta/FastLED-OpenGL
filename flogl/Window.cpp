@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 namespace flogl {
@@ -54,6 +53,7 @@ Window::Window():
    glfwSetKeyCallback(m_window, &Window::doKeyCallback);
    glfwSetScrollCallback(m_window, &Window::doScrollCallback);
 
+#ifndef __APPLE__
    // Initialize GLEW
    glewExperimental = true; // Needed for core profile
    if (glewInit() != GLEW_OK) {
@@ -61,6 +61,7 @@ Window::Window():
       glfwTerminate();
       exit(EXIT_FAILURE);
    }
+#endif
       
    // Ensure we can capture the escape key being pressed below
    glfwSetInputMode(m_window, GLFW_STICKY_KEYS, GL_TRUE);
