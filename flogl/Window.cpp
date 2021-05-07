@@ -33,7 +33,6 @@ Window::Window():
    }
      
    glfwWindowHint(GLFW_SAMPLES, 4);
-   glfwWindowHint(GLFW_RESIZABLE,GL_FALSE);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
@@ -143,7 +142,7 @@ void Window::processInputs()
 	}
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
-	m_projection_matrix = glm::perspective(glm::radians(m_fov_deg), 4.0f / 3.0f, 0.1f, 1000.0f);
+	m_projection_matrix = glm::perspective(glm::radians(m_fov_deg), float(width)/float(height), 0.1f, 1000.0f);
 	// Camera matrix
 	m_view_matrix = glm::lookAt(
 								m_position,           // Camera is here
