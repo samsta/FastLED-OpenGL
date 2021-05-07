@@ -7,10 +7,6 @@
 
 namespace flogl {
 
-namespace {
-const double DEBCOUNCE_TIME(0.1); // 100ms
-}
-
 Window::Window():
       m_window(NULL),
       m_position(0, 8, 5),
@@ -92,12 +88,12 @@ void Window::processInputs()
       m_last_time = glfwGetTime();
    }
 
-	// Compute time difference between current and last frame
-	double currentTime = glfwGetTime();
-	float deltaTime = float(currentTime - m_last_time);
+   // Compute time difference between current and last frame
+   double currentTime = glfwGetTime();
+   float deltaTime = float(currentTime - m_last_time);
 
-	int width, height;
-	glfwGetWindowSize(m_window, &width, &height);
+   int width, height;
+   glfwGetWindowSize(m_window, &width, &height);
 
    if (m_control_mouse)
    {
@@ -114,44 +110,42 @@ void Window::processInputs()
 
    glm::vec3 direction(getDirection());
    
-	// Right vector
-	glm::vec3 right = glm::vec3(
-		sin(m_horizontal_angle_rad - 3.14f/2.0f), 
-		0,
-		cos(m_horizontal_angle_rad - 3.14f/2.0f)
-	);
+   // Right vector
+   glm::vec3 right = glm::vec3(
+                        sin(m_horizontal_angle_rad - 3.14f/2.0f), 
+			0,
+			cos(m_horizontal_angle_rad - 3.14f/2.0f));
    
-	// Up vector
-	glm::vec3 up = glm::cross( right, direction );
+   // Up vector
+   glm::vec3 up = glm::cross( right, direction );
 
-	// Move up
-	if (glfwGetKey(m_window, GLFW_KEY_UP) == GLFW_PRESS){
-		m_position += up * deltaTime * m_speed;
-	}
-	// Move down
-	if (glfwGetKey(m_window, GLFW_KEY_DOWN) == GLFW_PRESS){
-		m_position -= up * deltaTime * m_speed;
-	}
-	// Strafe right
-	if (glfwGetKey(m_window, GLFW_KEY_RIGHT) == GLFW_PRESS){
-		m_position += right * deltaTime * m_speed;
-	}
-	// Strafe left
-	if (glfwGetKey(m_window, GLFW_KEY_LEFT) == GLFW_PRESS){
-		m_position -= right * deltaTime * m_speed;
-	}
+   // Move up
+   if (glfwGetKey(m_window, GLFW_KEY_UP) == GLFW_PRESS){
+     m_position += up * deltaTime * m_speed;
+   }
+   // Move down
+   if (glfwGetKey(m_window, GLFW_KEY_DOWN) == GLFW_PRESS){
+     m_position -= up * deltaTime * m_speed;
+   }
+   // Strafe right
+   if (glfwGetKey(m_window, GLFW_KEY_RIGHT) == GLFW_PRESS){
+     m_position += right * deltaTime * m_speed;
+   }
+   // Strafe left
+   if (glfwGetKey(m_window, GLFW_KEY_LEFT) == GLFW_PRESS){
+     m_position -= right * deltaTime * m_speed;
+   }
 
-	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
-	m_projection_matrix = glm::perspective(glm::radians(m_fov_deg), float(width)/float(height), 0.1f, 1000.0f);
-	// Camera matrix
-	m_view_matrix = glm::lookAt(
-								m_position,           // Camera is here
-								m_position+direction, // and looks here : at the same position, plus "direction"
-								up                    // Head is up (set to 0,-1,0 to look upside-down)
-						   );
+   // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 1000 units
+   m_projection_matrix = glm::perspective(glm::radians(m_fov_deg), float(width)/float(height), 0.1f, 1000.0f);
+   // Camera matrix
+   m_view_matrix = glm::lookAt(m_position,           // Camera is here
+			       m_position+direction, // and looks here : at the same position, plus "direction"
+			       up                    // Head is up (set to 0,-1,0 to look upside-down)
+			       );
 
-	// For the next frame, the "last time" will be "now"
-	m_last_time = currentTime;
+   // For the next frame, the "last time" will be "now"
+   m_last_time = currentTime;
 }
 
 
@@ -167,12 +161,11 @@ const glm::mat4& Window::getProjectionMatrix() const
 
 glm::vec3 Window::getDirection() const
 {
-	// Direction : Spherical coordinates to Cartesian coordinates conversion
-	return glm::vec3(
-		cos(m_vertical_angle_rad) * sin(m_horizontal_angle_rad), 
-		sin(m_vertical_angle_rad),
-		cos(m_vertical_angle_rad) * cos(m_horizontal_angle_rad)
-	);
+  // Direction : Spherical coordinates to Cartesian coordinates conversion
+  return glm::vec3(cos(m_vertical_angle_rad) * sin(m_horizontal_angle_rad), 
+		   sin(m_vertical_angle_rad),
+		   cos(m_vertical_angle_rad) * cos(m_horizontal_angle_rad)
+		   );
 }
 
 
@@ -231,8 +224,5 @@ void Window::scrollCallback(float xoffset, float yoffset)
 {
    m_position += getDirection() * yoffset * m_scroll_speed;
 }
-
-
-
 
 }
