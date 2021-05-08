@@ -3,6 +3,7 @@
 
 #include "platform.h"
 #include "FastLED.h"
+#include "Config.hpp"
 
 namespace flogl {
 
@@ -21,7 +22,7 @@ struct LED{
 class Flogl
 {
 public:
-   Flogl(LED* led_coordinates, unsigned num_leds);
+   Flogl(LED* led_coordinates, unsigned num_leds, const Config& config = Config());
 
    void add(CRGB* leds, unsigned num_leds);
 

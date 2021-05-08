@@ -10,12 +10,13 @@
 
 namespace flogl {
 
-Window::Window():
+Window::Window(const Config& config):
+      m_config(config),
       m_window(NULL),
-      m_position(0, 8, 5),
-      m_horizontal_angle_rad(3.14f),
-      m_vertical_angle_rad(0.0f),
-      m_fov_deg(45.0f),
+      m_position(),
+      m_horizontal_angle_rad(),
+      m_vertical_angle_rad(),
+      m_fov_deg(),
       m_speed(20.0f),
       m_scroll_speed(1.0f),
       m_mouse_speed(0.001f),
@@ -30,6 +31,8 @@ Window::Window():
       fprintf( stderr, "Failed to initialize GLFW\n" );
       exit(EXIT_FAILURE);
    }
+
+   selectView(0);
      
    glfwWindowHint(GLFW_SAMPLES, 4);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -38,9 +41,7 @@ Window::Window():
    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
    // Open a window and create its OpenGL context
-   int width = 1024;
-   int height = 768;
-   m_window = glfwCreateWindow(width, height, "FastLED OpenGL", NULL, NULL);
+   m_window = glfwCreateWindow(m_config.width(), m_config.height(), "FastLED OpenGL", NULL, NULL);
    if(m_window == NULL ){
       fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible.\n" );
       glfwTerminate();
@@ -71,7 +72,7 @@ Window::Window():
       
       // Set the mouse at the center of the screen
       glfwPollEvents();
-      glfwSetCursorPos(m_window, width/2, height/2);
+      glfwSetCursorPos(m_window, m_config.width()/2, m_config.height()/2);
    }
 
    // black background
@@ -122,7 +123,7 @@ void Window::processInputs()
    // Up vector
    glm::vec3 up = glm::cross( right, direction );
 
-   // Move up
+   // Move up or open FOV
    if (glfwGetKey(m_window, GLFW_KEY_UP) == GLFW_PRESS){
      m_position += up * deltaTime * m_speed;
    }
@@ -171,7 +172,18 @@ glm::vec3 Window::getDirection() const
 		   );
 }
 
-
+  void Window::selectView(unsigned index)
+{
+  if (index < m_config.views().size())
+  {
+    const Config::View& view(m_config.views()[index]);
+    m_position = glm::vec3(view.x, view.y, view.z);
+    m_fov_deg = view.fov_deg;
+    m_horizontal_angle_rad = M_PI * (view.horizontal_angle_deg + 180.f) / 180.f;
+    m_vertical_angle_rad = M_PI * view.vertical_angle_deg / 180.f;
+  }
+}
+  
 void Window::swapBuffers()
 {
    glfwSwapBuffers(m_window);
@@ -214,6 +226,24 @@ void Window::keyCallback(int key, int scan_code, int action, int mods)
             glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
          }
          break;
+      case GLFW_KEY_0:
+	 selectView(0);
+	 break;
+      case GLFW_KEY_1:
+	 selectView(1);
+	 break;
+      case GLFW_KEY_2:
+	 selectView(2);
+	 break;
+      case GLFW_KEY_3:
+	 selectView(3);
+	 break;
+      case GLFW_KEY_4:
+	 selectView(4);
+	 break;
+      case GLFW_KEY_5:
+	 selectView(5);
+	 break;
       }
    }
 }

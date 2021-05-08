@@ -2,15 +2,18 @@
 #define CONTROLS_HPP
 
 #include <glm/glm.hpp>
+#include "Config.hpp"
 
 class GLFWwindow;
 
 namespace flogl {
 
+class Config;
+  
 class Window
 {
 public:
-   Window();
+   Window(const Config& config);
    ~Window();
 
    void processInputs();
@@ -30,7 +33,10 @@ private:
 
    static void doScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
    void scrollCallback(float xoffset, float yoffset);
-   
+
+   void selectView(unsigned index);
+
+   Config       m_config;
    GLFWwindow*  m_window;
    glm::vec3    m_position;
    float        m_horizontal_angle_rad;

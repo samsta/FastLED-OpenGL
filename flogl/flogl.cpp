@@ -37,7 +37,7 @@ const std::string FRAGMENT_SHADER =
 class Flogl::Impl
 {
 public:
-   Impl(LED* leds, unsigned num_leds);  
+   Impl(LED* leds, unsigned num_leds, const Config& config);  
    ~Impl();
 
    void add(CRGB* leds, unsigned num_leds);
@@ -60,10 +60,10 @@ public:
    GLuint         m_texture_id;
 };
 
-Flogl::Impl::Impl(LED* leds, unsigned num_leds):
+Flogl::Impl::Impl(LED* leds, unsigned num_leds, const Config& config):
    m_leds(leds),
    m_num_leds(num_leds),
-   m_window(),
+   m_window(config),
    m_led_position_size_data(new GLfloat[num_leds * 4]),
    m_led_color_data(new GLubyte[num_leds * 4])
 {
@@ -265,8 +265,8 @@ Flogl::Impl::~Impl()
    glDeleteVertexArrays(1, &m_vertex_array_id);
 }
 
-Flogl::Flogl(LED* leds, unsigned num_leds):
-   m_i(*new Flogl::Impl(leds, num_leds))
+Flogl::Flogl(LED* leds, unsigned num_leds, const Config& config):
+    m_i(*new Flogl::Impl(leds, num_leds, config))
 {
 }
 
