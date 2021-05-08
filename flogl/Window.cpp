@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <glm/gtc/matrix_transform.hpp>
+#ifdef WITH_GLEW
+#include <GL/glew.h>
+#endif
 #include <GLFW/glfw3.h>
 
 namespace flogl {

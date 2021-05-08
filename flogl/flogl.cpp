@@ -9,8 +9,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/norm.hpp>
+#ifdef WITH_GLEW
+#include <GL/glew.h>
+#endif
 #include <GLFW/glfw3.h>
-
 
 #include "shader.hpp"
 #include "texture.hpp"

@@ -10,6 +10,9 @@ using namespace std;
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef WITH_GLEW
+#include <GL/glew.h>
+#endif
 #include <GLFW/glfw3.h>
 
 #include "shader.hpp"
