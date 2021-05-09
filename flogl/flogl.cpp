@@ -131,15 +131,15 @@ bool Flogl::Impl::draw()
    m_window.processInputs();
 
    const glm::mat4& view_matrix = m_window.getViewMatrix();
-      
-   // We will need the camera's position in order to sort the leds
-   // w.r.t the camera's distance.
-   // but this works too.
-   glm::vec3 CameraPosition(glm::inverse(view_matrix)[3]);
-   
+   glm::vec3 camera_position(glm::inverse(view_matrix)[3]);
    glm::mat4 ViewProjectionMatrix = m_window.getProjectionMatrix() * view_matrix;
    
-   
+   float closest_led_distance = 100000.f;
+   for(int i=0; i<m_num_leds; i++){
+       LED& p = m_leds[i];
+       closest_led_distance = std::min(closest_led_distance, glm::length2(glm::vec3(p.x, p.y, p.z) - camera_position));
+   }
+
    for(int i=0; i<m_num_leds; i++){
       
       LED& p = m_leds[i]; // shortcut
@@ -154,8 +154,10 @@ bool Flogl::Impl::draw()
       m_led_color_data[4*i+0] = p.led ? p.led->red : 0;
       m_led_color_data[4*i+1] = p.led ? p.led->green : 0;
       m_led_color_data[4*i+2] = p.led ? p.led->blue : 0;
-      m_led_color_data[4*i+3] = 255;
-      
+    
+      // dim LEDs further in the background, but don't allow them to disappear completely
+      float scaled_distance = (glm::length2(glm::vec3(p.x, p.y, p.z) - camera_position) - closest_led_distance)/300;
+      m_led_color_data[4*i+3] = 255 - std::min(scaled_distance, 200.f);
    }
    
    // Update the buffers that OpenGL uses for rendering.
