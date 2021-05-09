@@ -11,20 +11,18 @@ struct LED{
    LED(float x, float y, float z, float size = 0.5):
          x(x), y(y), z(z),
          size(size),
-         led(NULL)
+         color(NULL)
    {
    }
 	float x, y, z;
 	float size;
-   CRGB* led;
+   CRGB* color;
 };
 
 class Flogl
 {
 public:
    Flogl(LED* led_coordinates, unsigned num_leds, const Config& config = Config());
-
-   void add(CRGB* leds, unsigned num_leds);
 
    bool draw();
    

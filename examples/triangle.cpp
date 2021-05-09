@@ -114,7 +114,12 @@ void loop();
 int main()
 {
    flogl::Flogl flogl(led_coords, NUM_LEDS);
-   flogl.add(leds, NUM_LEDS);
+   
+   CRGB* col = leds;
+   for (LED& led: led_coords)
+   {
+      led.color = col++;
+   }
    
    do {
       usleep(30000);

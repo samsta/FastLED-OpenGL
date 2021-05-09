@@ -40,7 +40,6 @@ public:
    Impl(LED* leds, unsigned num_leds, const Config& config);  
    ~Impl();
 
-   void add(CRGB* leds, unsigned num_leds);
    bool draw();
       
    LED*           m_leds;
@@ -115,15 +114,6 @@ Flogl::Impl::Impl(LED* leds, unsigned num_leds, const Config& config):
 
 }
 
-void Flogl::Impl::add(CRGB* leds, unsigned num_leds)
-{
-   for (unsigned k = 0; k < num_leds && k < m_num_leds; k++)
-   {
-      m_leds[k].led = &leds[k];
-   }
-}
-
-
 bool Flogl::Impl::draw()
 {
    // Clear the screen
@@ -151,9 +141,9 @@ bool Flogl::Impl::draw()
       
       m_led_position_size_data[4*i+3] = p.size;
       
-      m_led_color_data[4*i+0] = p.led ? p.led->red : 0;
-      m_led_color_data[4*i+1] = p.led ? p.led->green : 0;
-      m_led_color_data[4*i+2] = p.led ? p.led->blue : 0;
+      m_led_color_data[4*i+0] = p.color ? p.color->red : 0;
+      m_led_color_data[4*i+1] = p.color ? p.color->green : 0;
+      m_led_color_data[4*i+2] = p.color ? p.color->blue : 0;
     
       // dim LEDs further in the background, but don't allow them to disappear completely
       float scaled_distance = (glm::length2(glm::vec3(p.x, p.y, p.z) - camera_position) - closest_led_distance)/300;
@@ -270,11 +260,6 @@ Flogl::Impl::~Impl()
 Flogl::Flogl(LED* leds, unsigned num_leds, const Config& config):
     m_i(*new Flogl::Impl(leds, num_leds, config))
 {
-}
-
-void Flogl::add(CRGB* leds, unsigned num_leds)
-{
-   m_i.add(leds, num_leds);
 }
 
 bool Flogl::draw()
