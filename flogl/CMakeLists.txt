@@ -40,15 +40,10 @@ add_library(flogl
 
 add_custom_command(
    OUTPUT LedTexture.cpp
-   COMMAND "${CMAKE_CURRENT_BINARY_DIR}/toblob"  "${CMAKE_CURRENT_SOURCE_DIR}/LED.DDS" "${CMAKE_CURRENT_BINARY_DIR}" LedTexture
+   COMMAND toblob  "${CMAKE_CURRENT_SOURCE_DIR}/LED.DDS" "${CMAKE_CURRENT_BINARY_DIR}" LedTexture
    DEPENDS toblob LED.DDS
 )
 
 target_link_libraries(flogl
    ${ALL_LIBS}
    )
-
-# Xcode and Visual working directories
-set_target_properties(flogl PROPERTIES XCODE_ATTRIBUTE_CONFIGURATION_BUILD_DIR "${CMAKE_CURRENT_SOURCE_DIR}/tutorial18_billboards_and_particles/")
-
-SOURCE_GROUP(common REGULAR_EXPRESSION ".*/common/.*" )
