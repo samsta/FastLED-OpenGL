@@ -28,6 +28,15 @@ add_definitions(
 
 add_executable(toblob util/toblob.cpp)
 
+set(FASTLED_SOURCES
+   "${FastLED_SRC}/colorutils.cpp"
+   "${FastLED_SRC}/colorpalettes.cpp"
+   "${FastLED_SRC}/hsv2rgb.cpp"
+   )
+set_source_files_properties(${FASTLED_SOURCES}
+   PROPERTIES COMPILE_FLAGS "-include platform.h"
+   )
+
 add_library(flogl
    flogl.cpp
    shader.cpp
@@ -36,6 +45,7 @@ add_library(flogl
    LED.fragmentshader
    LED.vertexshader
    "${CMAKE_CURRENT_BINARY_DIR}/LedTexture.cpp"
+   ${FASTLED_SOURCES}
    )
 
 add_custom_command(

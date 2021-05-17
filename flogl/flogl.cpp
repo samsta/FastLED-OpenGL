@@ -18,6 +18,16 @@
 #include "texture.hpp"
 #include "Window.hpp"
 
+
+// FastLED needs this symbol. Find a better place for it.
+// It is supposed to be provided by the application, so
+// we make it weak to allow for it to be reimplemented
+uint16_t XY(uint8_t, uint8_t) __attribute__ ((weak));
+uint16_t XY(uint8_t, uint8_t)
+{
+   return 0;
+}
+
 namespace flogl {
 
 using namespace glm;

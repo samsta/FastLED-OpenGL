@@ -131,17 +131,6 @@ int main()
 
 void loop()
 {
-   static unsigned cnt = 0;
-   
-   for(int i=0; i < NUM_LEDS; i++)
-   {
-      float t = float(cnt)/10;
-      float a = 2 * 3.141 * float(i)/NUM_LEDS;
-      
-      leds[i].red   = (sin(t  + a) + 1) * 127;
-      leds[i].green = (cos(t  + a) + 1) * 127;
-      leds[i].blue  = (sin(-t - a) + 1) * 127;
-   }
-
-   cnt++;
+   static uint8_t hue = 0;
+   fill_rainbow(leds, NUM_LEDS, hue++, 3);
 }
