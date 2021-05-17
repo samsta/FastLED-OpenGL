@@ -21,11 +21,16 @@ add_definitions(
    -std=c++11
    -DGLFW_INCLUDE_GLCOREARB=1
    -DGLFW_INCLUDE_GLEXT=1
-   # the following two are warnings about deprecations
-   # on mac OS. Potentially some work required in the future...
-   -DGL_SILENCE_DEPRECATION=1
-   -Wno-deprecated-register
    )
+
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+   add_definitions(
+      # the following two are warnings about deprecations
+      # on mac OS. Potentially some work required in the future...
+      -DGL_SILENCE_DEPRECATION=1
+      -Wno-deprecated-register
+      )
+endif()
 
 add_subdirectory(flogl)
 
