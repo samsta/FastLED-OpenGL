@@ -32,10 +32,12 @@ set(FASTLED_SOURCES
    "${FastLED_SRC}/colorutils.cpp"
    "${FastLED_SRC}/colorpalettes.cpp"
    "${FastLED_SRC}/hsv2rgb.cpp"
+   "${FastLED_SRC}/lib8tion.cpp"
    )
 set_source_files_properties(${FASTLED_SOURCES}
    PROPERTIES COMPILE_FLAGS "-include platform.h"
    )
+source_group(FastLED FILES ${FASTLED_SOURCES})
 
 add_library(flogl
    flogl.cpp
