@@ -13,6 +13,8 @@ find_package(GLM REQUIRED)
 include_directories(
    .
    ${CMAKE_CURRENT_BINARY_DIR}
+   ${GLFW_INCLUDE_DIR}
+   ${GLM_INCLUDE_DIR}
    )
 
 set(ALL_LIBS
