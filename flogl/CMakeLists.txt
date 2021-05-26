@@ -41,14 +41,21 @@ set_source_files_properties(${FASTLED_SOURCES}
    )
 source_group(FastLED FILES ${FASTLED_SOURCES})
 
-add_library(flogl
+set(FLOGL_SOURCES
    flogl.cpp
    shader.cpp
    texture.cpp
    Window.cpp
+   "${CMAKE_CURRENT_BINARY_DIR}/LedTexture.cpp"
+   )
+
+# Disable annoying #pragma messages.
+set_source_files_properties(${FLOGL_SOURCES} PROPERTIES COMPILE_FLAGS " -DFASTLED_INTERNAL")
+
+add_library(flogl
+   ${FLOGL_SOURCES}
    LED.fragmentshader
    LED.vertexshader
-   "${CMAKE_CURRENT_BINARY_DIR}/LedTexture.cpp"
    ${FASTLED_SOURCES}
    )
 
