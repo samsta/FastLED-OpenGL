@@ -227,23 +227,19 @@ void Window::keyCallback(int key, int scan_code, int action, int mods)
          }
          break;
       case GLFW_KEY_0:
-	 selectView(0);
-	 break;
       case GLFW_KEY_1:
-	 selectView(1);
-	 break;
       case GLFW_KEY_2:
-	 selectView(2);
-	 break;
       case GLFW_KEY_3:
-	 selectView(3);
-	 break;
       case GLFW_KEY_4:
-	 selectView(4);
-	 break;
       case GLFW_KEY_5:
-	 selectView(5);
-	 break;
+      case GLFW_KEY_6:
+      case GLFW_KEY_7:
+      case GLFW_KEY_8:
+      case GLFW_KEY_9:
+         selectView(key - GLFW_KEY_0);
+         break;
+      default:
+         break;
       }
    }
 }
