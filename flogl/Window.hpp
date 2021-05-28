@@ -51,6 +51,8 @@ private:
    double       m_last_time;
 
    bool         m_control_mouse;
+   bool         m_shift_pressed;
+   bool         m_should_close;
 };
 
 }

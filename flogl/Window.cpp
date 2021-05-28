@@ -23,7 +23,9 @@ Window::Window(const Config& config):
       m_view_matrix(),
       m_projection_matrix(),
       m_last_time(0.0),
-      m_control_mouse(false)
+      m_control_mouse(false),
+      m_shift_pressed(false),
+      m_should_close(false)
 {
    // Initialise GLFW
    if(not glfwInit())
@@ -123,7 +125,7 @@ void Window::processInputs()
    // Up vector
    glm::vec3 up = glm::cross( right, direction );
 
-   // Move up or open FOV
+   // Move up 
    if (glfwGetKey(m_window, GLFW_KEY_UP) == GLFW_PRESS){
      m_position += up * deltaTime * m_speed;
    }
@@ -192,7 +194,7 @@ void Window::swapBuffers()
 
 bool Window::shouldClose() const
 {
-   return glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS or
+   return m_should_close or
           glfwWindowShouldClose(m_window);
 }
 
@@ -203,7 +205,15 @@ void Window::doKeyCallback(GLFWwindow* window, int key, int scan_code, int actio
 
 void Window::keyCallback(int key, int scan_code, int action, int mods)
 {
-   if (action == GLFW_PRESS)
+   if (key == GLFW_KEY_RIGHT_SHIFT or key == GLFW_KEY_LEFT_SHIFT)
+   {
+      m_shift_pressed = (action == GLFW_PRESS);
+      return;
+   }
+   
+   if (action != GLFW_PRESS) return;
+   
+   if (m_shift_pressed)
    {
       switch(key) {
       case GLFW_KEY_M:
@@ -238,9 +248,16 @@ void Window::keyCallback(int key, int scan_code, int action, int mods)
       case GLFW_KEY_9:
          selectView(key - GLFW_KEY_0);
          break;
+      case GLFW_KEY_Q:
+         m_should_close = true;
+         break;
       default:
          break;
       }
+   }
+   else if (isprint(key))
+   {
+      printf("%c", char(key));
    }
 }
 

@@ -16,3 +16,16 @@ or on Mac ([homewbrew](https://brew.sh) required)
 brew install cmake glfw glm
 ~~~
 
+## Keystrokes
+
+- Arrow left/right: strafe left, right
+- Arrow up/down: move up, down
+- Shift-0 to Shift-9: select view 0 to 9 from the list of Config::View passed into the constructor
+- Shift-M: toggle full mouse control, see below. Off at startup
+- Shift-Q: quit
+
+## Mouse Control
+
+Zoom in and out using the scroll wheel.
+
+If full mouse control is enabled with Shift-M, the mouse cursor disappears and you can look around by moving the mouse
