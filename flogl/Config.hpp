@@ -23,12 +23,18 @@ public:
       float fov_deg, horizontal_angle_deg, vertical_angle_deg;
    };
    
-   
+   class KeyboardHandler
+   {
+   public:
+      virtual ~KeyboardHandler(){}
+      virtual void handleKey(char c) = 0;
+   };
    
    Config():
       m_width(1024),
       m_height(768),
-      m_views(1, View(0, 8, 5))
+      m_views(1, View(0, 8, 5)),
+      m_keyboard_handler(&m_null_handler)
    {
    }
    
@@ -41,10 +47,25 @@ public:
    Config& views(std::vector<View>& views) { m_views = views; return *this; }
    const std::vector<View>& views() const { return m_views; }
    
+   Config& keyboardHandler(KeyboardHandler* handler)
+   {
+      if (handler) m_keyboard_handler = handler;
+      return *this;
+   }
+   KeyboardHandler& keyboardHandler() const { return *m_keyboard_handler; }
+   
 private:
+   
+   class NullKeyboardHandler: public KeyboardHandler
+   {
+   public:
+      virtual void handleKey(char){}
+   } m_null_handler;
+   
    int m_width;
    int m_height;
    std::vector<View> m_views;
+   KeyboardHandler* m_keyboard_handler;
 };
 
 }

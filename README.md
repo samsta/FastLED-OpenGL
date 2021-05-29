@@ -24,6 +24,9 @@ brew install cmake glfw glm
 - Shift-M: toggle full mouse control, see below. Off at startup
 - Shift-Q: quit
 
+Any keys that aren't handled are passed on to Config::KeyboardHandler if one was registered.
+Note that the keys are represented by uppercase characters always.
+
 ## Mouse Control
 
 Zoom in and out using the scroll wheel.

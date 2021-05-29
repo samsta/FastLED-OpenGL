@@ -252,12 +252,20 @@ void Window::keyCallback(int key, int scan_code, int action, int mods)
          m_should_close = true;
          break;
       default:
+         if (isprint(key))
+         {
+            m_config.keyboardHandler().handleKey(key);
+         }
          break;
       }
    }
    else if (isprint(key))
    {
-      printf("%c", char(key));
+      m_config.keyboardHandler().handleKey(key);
+   }
+   else if (key == GLFW_KEY_ENTER)
+   {
+      m_config.keyboardHandler().handleKey('\n');
    }
 }
 
