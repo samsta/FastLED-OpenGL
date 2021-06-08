@@ -47,13 +47,12 @@ const std::string FRAGMENT_SHADER =
 class Flogl::Impl
 {
 public:
-   Impl(LED* leds, unsigned num_leds, const Config& config);  
+   Impl(std::vector<LED>& led_coordinates, const Config& config);
    ~Impl();
 
    bool draw();
       
-   LED*           m_leds;
-   const unsigned m_num_leds;
+   std::vector<LED>& m_leds;
    Window         m_window;
    GLuint         m_vertex_array_id;
    GLuint         m_program_id;
@@ -69,12 +68,11 @@ public:
    GLuint         m_texture_id;
 };
 
-Flogl::Impl::Impl(LED* leds, unsigned num_leds, const Config& config):
+Flogl::Impl::Impl(std::vector<LED>& leds, const Config& config):
    m_leds(leds),
-   m_num_leds(num_leds),
    m_window(config),
-   m_led_position_size_data(new GLfloat[num_leds * 4]),
-   m_led_color_data(new GLubyte[num_leds * 4])
+   m_led_position_size_data(new GLfloat[m_leds.size() * 4]),
+   m_led_color_data(new GLubyte[m_leds.size() * 4])
 {
    // Enable depth test
    glEnable(GL_DEPTH_TEST);
@@ -114,13 +112,13 @@ Flogl::Impl::Impl(LED* leds, unsigned num_leds, const Config& config):
    glGenBuffers(1, &m_leds_position_buffer);
    glBindBuffer(GL_ARRAY_BUFFER, m_leds_position_buffer);
    // Initialize with empty (NULL) buffer : it will be updated later, each frame.
-   glBufferData(GL_ARRAY_BUFFER, m_num_leds * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
+   glBufferData(GL_ARRAY_BUFFER, m_leds.size() * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
       
    // The VBO containing the colors of the leds
    glGenBuffers(1, &m_leds_color_buffer);
    glBindBuffer(GL_ARRAY_BUFFER, m_leds_color_buffer);
    // Initialize with empty (NULL) buffer : it will be updated later, each frame.
-   glBufferData(GL_ARRAY_BUFFER, m_num_leds * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
+   glBufferData(GL_ARRAY_BUFFER, m_leds.size() * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
 
 }
 
@@ -135,15 +133,14 @@ bool Flogl::Impl::draw()
    glm::mat4 ViewProjectionMatrix = m_window.getProjectionMatrix() * view_matrix;
    
    float closest_led_distance = 100000.f;
-   for(int i=0; i<m_num_leds; i++){
-       LED& p = m_leds[i];
+   for (LED& p: m_leds)
+   {
        closest_led_distance = std::min(closest_led_distance, glm::length2(glm::vec3(p.x, p.y, p.z) - camera_position));
    }
 
-   for(int i=0; i<m_num_leds; i++){
-      
-      LED& p = m_leds[i]; // shortcut
-      
+   int i = 0;
+   for (LED& p: m_leds)
+   {
       // Fill the GPU buffer
       m_led_position_size_data[4*i+0] = p.x;
       m_led_position_size_data[4*i+1] = p.y;
@@ -158,6 +155,7 @@ bool Flogl::Impl::draw()
       // dim LEDs further in the background, but don't allow them to disappear completely
       float scaled_distance = (glm::length2(glm::vec3(p.x, p.y, p.z) - camera_position) - closest_led_distance)/300;
       m_led_color_data[4*i+3] = 255 - std::min(scaled_distance, 200.f);
+      i++;
    }
    
    // Update the buffers that OpenGL uses for rendering.
@@ -167,12 +165,12 @@ bool Flogl::Impl::draw()
    
    
    glBindBuffer(GL_ARRAY_BUFFER, m_leds_position_buffer);
-   glBufferData(GL_ARRAY_BUFFER, m_num_leds * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
-   glBufferSubData(GL_ARRAY_BUFFER, 0, m_num_leds * sizeof(GLfloat) * 4, m_led_position_size_data);
+   glBufferData(GL_ARRAY_BUFFER, m_leds.size() * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+   glBufferSubData(GL_ARRAY_BUFFER, 0, m_leds.size() * sizeof(GLfloat) * 4, m_led_position_size_data);
    
    glBindBuffer(GL_ARRAY_BUFFER, m_leds_color_buffer);
-   glBufferData(GL_ARRAY_BUFFER, m_num_leds * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
-   glBufferSubData(GL_ARRAY_BUFFER, 0, m_num_leds * sizeof(GLubyte) * 4, m_led_color_data);
+   glBufferData(GL_ARRAY_BUFFER, m_leds.size() * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+   glBufferSubData(GL_ARRAY_BUFFER, 0, m_leds.size() * sizeof(GLubyte) * 4, m_led_color_data);
    
    
    glEnable(GL_BLEND);
@@ -242,7 +240,7 @@ bool Flogl::Impl::draw()
    // This is equivalent to :
    // for(i in m_num_leds) : glDrawArrays(GL_TRIANGLE_STRIP, 0, 4), 
    // but faster.
-   glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, m_num_leds);
+   glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, m_leds.size());
    
    glDisableVertexAttribArray(0);
    glDisableVertexAttribArray(1);
@@ -267,8 +265,8 @@ Flogl::Impl::~Impl()
    glDeleteVertexArrays(1, &m_vertex_array_id);
 }
 
-Flogl::Flogl(LED* leds, unsigned num_leds, const Config& config):
-    m_i(*new Flogl::Impl(leds, num_leds, config))
+Flogl::Flogl(std::vector<LED>& led_coordinates, const Config& config):
+    m_i(*new Flogl::Impl(led_coordinates, config))
 {
 }
 

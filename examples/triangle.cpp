@@ -8,7 +8,7 @@ float hsc = 0.3;
 
 using flogl::LED;
 
-LED led_coords[] =
+std::vector<LED> led_coords =
 {
    { 0.000000, 15.000000, -20},
    { 0.300000, 14.500000, -20},
@@ -105,15 +105,15 @@ LED led_coords[] =
    {-0.000000, 15.000000, -20}
 };
 
-const int NUM_LEDS = sizeof(led_coords)/sizeof(*led_coords);
 
-CRGB leds[NUM_LEDS];
+CRGB* leds;
 
 void loop();
 
 int main()
 {
-   flogl::Flogl flogl(led_coords, NUM_LEDS);
+   leds = new CRGB[led_coords.size()];
+   flogl::Flogl flogl(led_coords);
    
    CRGB* col = leds;
    for (LED& led: led_coords)
@@ -126,11 +126,13 @@ int main()
       loop();
    } while(flogl.draw());
    
+   delete[] leds;
+   
    return 0;
 }
 
 void loop()
 {
    static uint8_t hue = 0;
-   fill_rainbow(leds, NUM_LEDS, hue++, 3);
+   fill_rainbow(leds, led_coords.size(), hue++, 3);
 }

@@ -22,7 +22,7 @@ struct LED{
 class Flogl
 {
 public:
-   Flogl(LED* led_coordinates, unsigned num_leds, const Config& config = Config());
+   Flogl(std::vector<LED>& led_coordinates, const Config& config = Config());
 
    bool draw();
    
