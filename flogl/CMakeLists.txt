@@ -23,10 +23,6 @@ set(ALL_LIBS
    ${GLFW_LIBRARY}
 )
 
-add_definitions(
-   -std=c++11
-   -D_CRT_SECURE_NO_WARNINGS
-   )
 
 add_executable(toblob util/toblob.cpp)
 
@@ -37,7 +33,7 @@ set(FASTLED_SOURCES
    "${FastLED_SRC}/lib8tion.cpp"
    )
 set_source_files_properties(${FASTLED_SOURCES}
-   PROPERTIES COMPILE_FLAGS "-include platform.h"
+   PROPERTIES COMPILE_FLAGS "-include platform.h -Wno-mismatched-tags -Wno-unused-private-field"
    )
 source_group(FastLED FILES ${FASTLED_SOURCES})
 
@@ -46,7 +42,7 @@ set(FLOGL_SOURCES
    shader.cpp
    texture.cpp
    Window.cpp
-   "${CMAKE_CURRENT_BINARY_DIR}/LedTexture.cpp"
+   "${CMAKE_CURRENT_BINARY_DIR}/LedTexture.hpp"
    )
 
 # Disable annoying #pragma messages.
@@ -60,7 +56,7 @@ add_library(flogl
    )
 
 add_custom_command(
-   OUTPUT LedTexture.cpp
+   OUTPUT LedTexture.hpp
    COMMAND toblob  "${CMAKE_CURRENT_SOURCE_DIR}/LED.DDS" "${CMAKE_CURRENT_BINARY_DIR}" LedTexture
    DEPENDS toblob LED.DDS
 )

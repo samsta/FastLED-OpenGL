@@ -60,12 +60,10 @@ GLuint loadDDS(const unsigned char* binary_image, unsigned size)
    
    unsigned int height      = hdr.dwHeight;
    unsigned int width       = hdr.dwWidth;
-   unsigned int linearSize  = hdr.dwPitchOrLinearSize;
    unsigned int mipMapCount = hdr.dwMipMapCount;
    unsigned int fourCC      = hdr.ddspf.dwFourCC;
    
    const unsigned char *buffer = binary_image + HEADER_SIZE;
-   unsigned int components  = (fourCC == FOURCC_DXT1) ? 3 : 4; 
    unsigned int format;
    switch(fourCC) 
    { 

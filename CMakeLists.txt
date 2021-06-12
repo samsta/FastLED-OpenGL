@@ -21,6 +21,8 @@ add_definitions(
    -std=c++11
    -DGLFW_INCLUDE_GLCOREARB=1
    -DGLFW_INCLUDE_GLEXT=1
+   -Werror
+   -Wall
    )
 
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")

@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include "Config.hpp"
 
-class GLFWwindow;
+struct GLFWwindow;
 
 namespace flogl {
 

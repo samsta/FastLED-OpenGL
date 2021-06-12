@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
       std::cerr << "usage: " << argv[0] << " <in_file> <out_dir> <blob_name>" << std::endl;
       std::cerr << std::endl;
       std::cerr << "convert <in_file> to source code representing a blob name blobs::<blob_name>" << std::endl;
-      std::cerr << "and write the result to <out_dir>/<blob_name>.cpp" << std::endl;
+      std::cerr << "and write the result to <out_dir>/<blob_name>.hpp" << std::endl;
       return 1;
    }
    const char* in_file_name = argv[1];
@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
       return 1;
    }
 
-   std::string out_file_name = std::string(out_dir_name) + "/" + blob_name + ".cpp";
+   std::string out_file_name = std::string(out_dir_name) + "/" + blob_name + ".hpp";
    std::ofstream out_file(out_file_name.c_str());
    if (not out_file.good())
    {

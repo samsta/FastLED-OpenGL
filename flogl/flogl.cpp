@@ -42,7 +42,7 @@ const std::string FRAGMENT_SHADER =
 ;
 }
 
-#include "LedTexture.cpp"
+#include "LedTexture.hpp"
 
 class Flogl::Impl
 {
