@@ -17,8 +17,7 @@
 #endif
 
 #define FASTLED_FORCE_SOFTWARE_PINS
-#define NO_HARDWARE_PIN_SUPPORT
-#undef HAS_HARDWARD_PIN_SUPPORT
+#define HAS_HARDWARE_PIN_SUPPORT
 
 // likely to be problematic:
 #define F_CPU 1000000000
