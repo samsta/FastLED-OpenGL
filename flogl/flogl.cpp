@@ -40,6 +40,36 @@ const std::string VERTEX_SHADER =
 const std::string FRAGMENT_SHADER =
 #include "LED.fragmentshader"
 ;
+
+struct LedPosition
+{
+   GLfloat x,y,z,size;
+   
+   void operator=(const LED& l)
+   {
+      x = l.x;
+      y = l.y;
+      z = l.z;
+      size = l.size;
+   }
+   
+};
+
+struct LedColor
+{
+   GLubyte r,g,b;
+   
+   void operator=(const LED& l)
+   {
+      if (l.color != nullptr)
+      {
+         r = l.color->r;
+         g = l.color->g;
+         b = l.color->b;
+      }
+   }
+};
+
 }
 
 #include "LedTexture.hpp"
@@ -56,8 +86,8 @@ public:
    Window         m_window;
    GLuint         m_vertex_array_id;
    GLuint         m_program_id;
-   GLfloat*       m_led_position_size_data;
-   GLubyte*       m_led_color_data;
+   LedPosition*   m_led_position_size_data;
+   LedColor*      m_led_color_data;
    GLuint         m_vertex_buffer;
    GLuint         m_leds_position_buffer;
    GLuint         m_leds_color_buffer;
@@ -71,8 +101,8 @@ public:
 Flogl::Impl::Impl(std::vector<LED>& leds, const Config& config):
    m_leds(leds),
    m_window(config),
-   m_led_position_size_data(new GLfloat[m_leds.size() * 4]),
-   m_led_color_data(new GLubyte[m_leds.size() * 3])
+   m_led_position_size_data(new LedPosition[m_leds.size()]),
+   m_led_color_data(new LedColor[m_leds.size()])
 {
    // Enable depth test
    glEnable(GL_DEPTH_TEST);
@@ -112,13 +142,13 @@ Flogl::Impl::Impl(std::vector<LED>& leds, const Config& config):
    glGenBuffers(1, &m_leds_position_buffer);
    glBindBuffer(GL_ARRAY_BUFFER, m_leds_position_buffer);
    // Initialize with empty (NULL) buffer : it will be updated later, each frame.
-   glBufferData(GL_ARRAY_BUFFER, m_leds.size() * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
+   glBufferData(GL_ARRAY_BUFFER, m_leds.size() * sizeof(LedPosition), NULL, GL_STREAM_DRAW);
       
    // The VBO containing the colors of the leds
    glGenBuffers(1, &m_leds_color_buffer);
    glBindBuffer(GL_ARRAY_BUFFER, m_leds_color_buffer);
    // Initialize with empty (NULL) buffer : it will be updated later, each frame.
-   glBufferData(GL_ARRAY_BUFFER, m_leds.size() * 3 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
+   glBufferData(GL_ARRAY_BUFFER, m_leds.size() * sizeof(LedColor), NULL, GL_STREAM_DRAW);
 
 }
 
@@ -136,16 +166,8 @@ bool Flogl::Impl::draw()
    for (LED& p: m_leds)
    {
       // Fill the GPU buffer
-      m_led_position_size_data[4*i+0] = p.x;
-      m_led_position_size_data[4*i+1] = p.y;
-      m_led_position_size_data[4*i+2] = p.z;
-      
-      m_led_position_size_data[4*i+3] = p.size;
-      
-      m_led_color_data[3*i+0] = p.color ? p.color->red : 0;
-      m_led_color_data[3*i+1] = p.color ? p.color->green : 0;
-      m_led_color_data[3*i+2] = p.color ? p.color->blue : 0;
-    
+      m_led_position_size_data[i] = p;
+      m_led_color_data[i] = p;
       i++;
    }
    
@@ -156,12 +178,12 @@ bool Flogl::Impl::draw()
    
    
    glBindBuffer(GL_ARRAY_BUFFER, m_leds_position_buffer);
-   glBufferData(GL_ARRAY_BUFFER, m_leds.size() * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
-   glBufferSubData(GL_ARRAY_BUFFER, 0, m_leds.size() * sizeof(GLfloat) * 4, m_led_position_size_data);
+   glBufferData(GL_ARRAY_BUFFER, m_leds.size() * sizeof(LedPosition), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+   glBufferSubData(GL_ARRAY_BUFFER, 0, m_leds.size() * sizeof(LedPosition), m_led_position_size_data);
    
    glBindBuffer(GL_ARRAY_BUFFER, m_leds_color_buffer);
-   glBufferData(GL_ARRAY_BUFFER, m_leds.size() * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
-   glBufferSubData(GL_ARRAY_BUFFER, 0, m_leds.size() * sizeof(GLubyte) * 3, m_led_color_data);
+   glBufferData(GL_ARRAY_BUFFER, m_leds.size() * sizeof(LedColor), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+   glBufferSubData(GL_ARRAY_BUFFER, 0, m_leds.size() * sizeof(LedColor), m_led_color_data);
    
    
    glEnable(GL_BLEND);
@@ -210,9 +232,9 @@ bool Flogl::Impl::draw()
    glBindBuffer(GL_ARRAY_BUFFER, m_leds_color_buffer);
    glVertexAttribPointer(
       2,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-      3,                                // size : r + g + b + a => 4
+      3,                                // size : r + g + b => 3
       GL_UNSIGNED_BYTE,                 // type
-      GL_TRUE,                          // normalized?    *** YES, this means that the unsigned char[4] will be accessible with a vec4 (floats) in the shader ***
+      GL_TRUE,                          // normalized?    *** YES, this means that the unsigned char[3] will be accessible with a vec3 (floats) in the shader ***
       0,                                // stride
       (void*)0                          // array buffer offset
    );
