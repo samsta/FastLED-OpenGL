@@ -51,7 +51,7 @@ public:
    ~Impl();
 
    bool draw();
-      
+
    std::vector<LED>& m_leds;
    Window         m_window;
    GLuint         m_vertex_array_id;
@@ -72,7 +72,7 @@ Flogl::Impl::Impl(std::vector<LED>& leds, const Config& config):
    m_leds(leds),
    m_window(config),
    m_led_position_size_data(new GLfloat[m_leds.size() * 4]),
-   m_led_color_data(new GLubyte[m_leds.size() * 4])
+   m_led_color_data(new GLubyte[m_leds.size() * 3])
 {
    // Enable depth test
    glEnable(GL_DEPTH_TEST);
@@ -118,7 +118,7 @@ Flogl::Impl::Impl(std::vector<LED>& leds, const Config& config):
    glGenBuffers(1, &m_leds_color_buffer);
    glBindBuffer(GL_ARRAY_BUFFER, m_leds_color_buffer);
    // Initialize with empty (NULL) buffer : it will be updated later, each frame.
-   glBufferData(GL_ARRAY_BUFFER, m_leds.size() * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
+   glBufferData(GL_ARRAY_BUFFER, m_leds.size() * 3 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
 
 }
 
@@ -131,12 +131,6 @@ bool Flogl::Impl::draw()
    const glm::mat4& view_matrix = m_window.getViewMatrix();
    glm::vec3 camera_position(glm::inverse(view_matrix)[3]);
    glm::mat4 ViewProjectionMatrix = m_window.getProjectionMatrix() * view_matrix;
-   
-   float closest_led_distance = 100000.f;
-   for (LED& p: m_leds)
-   {
-       closest_led_distance = std::min(closest_led_distance, glm::length2(glm::vec3(p.x, p.y, p.z) - camera_position));
-   }
 
    int i = 0;
    for (LED& p: m_leds)
@@ -148,13 +142,10 @@ bool Flogl::Impl::draw()
       
       m_led_position_size_data[4*i+3] = p.size;
       
-      m_led_color_data[4*i+0] = p.color ? p.color->red : 0;
-      m_led_color_data[4*i+1] = p.color ? p.color->green : 0;
-      m_led_color_data[4*i+2] = p.color ? p.color->blue : 0;
+      m_led_color_data[3*i+0] = p.color ? p.color->red : 0;
+      m_led_color_data[3*i+1] = p.color ? p.color->green : 0;
+      m_led_color_data[3*i+2] = p.color ? p.color->blue : 0;
     
-      // dim LEDs further in the background, but don't allow them to disappear completely
-      float scaled_distance = (glm::length2(glm::vec3(p.x, p.y, p.z) - camera_position) - closest_led_distance)/300;
-      m_led_color_data[4*i+3] = 255 - std::min(scaled_distance, 200.f);
       i++;
    }
    
@@ -170,7 +161,7 @@ bool Flogl::Impl::draw()
    
    glBindBuffer(GL_ARRAY_BUFFER, m_leds_color_buffer);
    glBufferData(GL_ARRAY_BUFFER, m_leds.size() * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
-   glBufferSubData(GL_ARRAY_BUFFER, 0, m_leds.size() * sizeof(GLubyte) * 4, m_led_color_data);
+   glBufferSubData(GL_ARRAY_BUFFER, 0, m_leds.size() * sizeof(GLubyte) * 3, m_led_color_data);
    
    
    glEnable(GL_BLEND);
@@ -185,7 +176,6 @@ bool Flogl::Impl::draw()
    // Set our "myTextureSampler" sampler to use Texture Unit 0
    glUniform1i(m_texture_id, 0);
    
-   // Same as the billboards tutorial
    glUniform3f(m_camera_right_worldspace_id, view_matrix[0][0], view_matrix[1][0], view_matrix[2][0]);
    glUniform3f(m_camera_up_worldspace_id   , view_matrix[0][1], view_matrix[1][1], view_matrix[2][1]);
    
@@ -220,7 +210,7 @@ bool Flogl::Impl::draw()
    glBindBuffer(GL_ARRAY_BUFFER, m_leds_color_buffer);
    glVertexAttribPointer(
       2,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-      4,                                // size : r + g + b + a => 4
+      3,                                // size : r + g + b + a => 4
       GL_UNSIGNED_BYTE,                 // type
       GL_TRUE,                          // normalized?    *** YES, this means that the unsigned char[4] will be accessible with a vec4 (floats) in the shader ***
       0,                                // stride
