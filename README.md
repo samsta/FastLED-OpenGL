@@ -1,8 +1,12 @@
 # FastLED-OpenGL
 
-Provides a way to simulate addressable LEDs with [OpenGL](https://www.opengl.org/) using [FastLED](https://github.com/FastLED/FastLED)
+Provides a way to simulate addressable LEDs with [OpenGL](https://www.opengl.org/) using [FastLED](https://github.com/FastLED/FastLED). This is a still from the animation created in [triangle.cpp](examples/triangle.cpp):
 
-This is used in [GeoLEDic](https://github.com/samsta/GeoLEDic) and I've broken it out into a separate repository in case it might be useful to someone else. At this point I'm intending to add just the functionality needed in GeoLEDic, and no more.
+![Screenshot of triangle example](examples/triangle.png)
+
+This was used in [GeoLEDic](https://github.com/samsta/GeoLEDic) and I've broken it out into a separate repository, but very soon I realised that I couldn't bring up the time to keep it generic, and GeoLEDic diverged. I'm keeping this repo here in case it might be useful to someone else. 
+
+See the [cmake workflow](.github/workflows/cmake.yml) for an idea how to build it. Good luck!
 
 Status: very early stage...
 
